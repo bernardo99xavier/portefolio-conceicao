@@ -1,112 +1,62 @@
-import { useEffect, useState } from "react"
-import Navbar from "./components/Navbar"
-import Hero from "./sections/Hero"
-
-import heroVideo from "./assets/videos/hp_v001.webm"
-import logo from "./assets/logo_cf.svg"
-
-/* IMAGES */
-import img1 from "./assets/img/homepage/hp_p001.jpg"
-import img2 from "./assets/img/homepage/hp_p002.jpg"
-import img3 from "./assets/img/homepage/hp_p003.jpg"
-import img4 from "./assets/img/homepage/hp_p004.jpg"
-
+import { useState, useEffect } from "react"
+import { Outlet, useLocation } from "react-router-dom"
+import { HelmetProvider } from "react-helmet-async"
 import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
 
-gsap.registerPlugin(ScrollTrigger)
+import { TransitionProvider } from "./context/TransitionContext"
+import Navbar from "./components/Navbar"
 
-function GridOverlay({ visible }) {
-  if (!visible) return null
-
-  return (
-    <div className="grid-overlay">
-      {Array.from({ length: 12 }).map((_, i) => (
-        <div key={i}></div>
-      ))}
-    </div>
-  )
-}
+export const NAV_LOGO_LEFT = 15
+export const NAV_LOGO_TOP = 10
 
 function App() {
-  const [showGrid, setShowGrid] = useState(false)
   const [lang, setLang] = useState("pt")
+  const [activeCategory, setActiveCategory] = useState("tudo")
+  const [activeColor, setActiveColor] = useState(null)
+  const location = useLocation()
 
   useEffect(() => {
-    function handleKeyDown(e) {
-      if (e.key.toLowerCase() === "g") {
-        setShowGrid(prev => !prev)
-      }
+    if (location.pathname === "/catalogo") {
+      setActiveCategory("tudo")
+      setActiveColor(null)
+    }
+  }, [location.pathname])
+
+  useEffect(() => {
+    if (location.pathname === "/") return
+
+    const logo = document.querySelector(".nav-logo")
+    const navLinks = document.querySelector(".nav-links")
+
+    const setNavPosition = () => {
+      gsap.set(logo, {
+        xPercent: 0,
+        yPercent: 0,
+        x: NAV_LOGO_LEFT - window.innerWidth / 2,
+        y: NAV_LOGO_TOP - window.innerHeight / 2,
+        scale: 1,
+        filter: "brightness(1) invert(0)",
+      })
+      logo.classList.add("is-active")
+      gsap.set(navLinks, { opacity: 1, y: 0 })
     }
 
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [])
-
-useEffect(() => {
-  gsap.to(".nav-logo", {
-    x: -90,
-    y: -35,
-    scale: 0.45,
-    filter: "brightness(0)",
-
-    ease: "none",
-
-    scrollTrigger: {
-      trigger: ".page-grid",
-      start: "top 90%",
-      end: "120 top",
-      scrub: 1
-    }
-  })
-}, [])
-
-useEffect(() => {
-  gsap.fromTo(".nav-logo",
-    {
-      opacity: 0,
-      filter: "blur(10px)"
-    },
-    {
-      opacity: 1,
-      filter: "blur(0px)",
-      duration: 1.2,
-      ease: "power2.out"
-    }
-  )
-}, [])
-
-useEffect(() => {
-  window.scrollTo(0, 0)
-}, [])
+    setNavPosition()
+    window.addEventListener("resize", setNavPosition)
+    return () => window.removeEventListener("resize", setNavPosition)
+  }, [location.pathname])
 
   return (
-    <>
-      <GridOverlay visible={showGrid} />
-
-      <Navbar lang={lang} setLang={setLang} />
-
-      <video className="hero-video" autoPlay muted loop playsInline>
-        <source src={heroVideo} type="video/webm" />
-      </video>
-
-      <div className="page-grid">
-        <div className="image-block"><img src={img1} /></div>
-        <div className="image-block"><img src={img2} /></div>
-        <div className="image-block"><img src={img3} /></div>
-        <div className="image-block"><img src={img4} /></div>
-        <div className="image-block"><img src={img4} /></div>
-        <div className="image-block"><img src={img3} /></div>
-        <div className="image-block"><img src={img2} /></div>
-        <div className="image-block"><img src={img1} /></div>
-        <div className="image-block"><img src={img1} /></div>
-        <div className="image-block"><img src={img2} /></div>
-        <div className="image-block"><img src={img3} /></div>
-        <div className="image-block"><img src={img4} /></div>
-
-        <Hero lang={lang} />
-      </div>
-    </>
+    <HelmetProvider>
+      <TransitionProvider>
+        <Navbar
+          lang={lang} setLang={setLang}
+          activeCategory={activeCategory} setActiveCategory={setActiveCategory}
+          activeColor={activeColor} setActiveColor={setActiveColor}
+        />
+        <Outlet context={{ lang, activeCategory, activeColor }} />
+      </TransitionProvider>
+    </HelmetProvider>
   )
 }
 
