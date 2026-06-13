@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Outlet, useLocation } from "react-router-dom"
 import { HelmetProvider } from "react-helmet-async"
 import gsap from "gsap"
@@ -13,7 +13,17 @@ function App() {
   const [lang, setLang] = useState("pt")
   const [activeCategory, setActiveCategory] = useState("tudo")
   const [activeColor, setActiveColor] = useState(null)
+  const [gridView, setGridView] = useState(() =>
+    typeof window !== "undefined" && window.innerWidth < 768 ? 1 : 3
+  )
+  const flipCaptureRef = useRef(null)
   const location = useLocation()
+
+  const changeView = (newView) => {
+    if (newView === gridView) return
+    if (flipCaptureRef.current) flipCaptureRef.current()
+    setGridView(newView)
+  }
 
   useEffect(() => {
     if (location.pathname === "/catalogo") {
@@ -53,8 +63,9 @@ function App() {
           lang={lang} setLang={setLang}
           activeCategory={activeCategory} setActiveCategory={setActiveCategory}
           activeColor={activeColor} setActiveColor={setActiveColor}
+          gridView={gridView} changeView={changeView}
         />
-        <Outlet context={{ lang, activeCategory, activeColor }} />
+        <Outlet context={{ lang, activeCategory, activeColor, gridView, flipCaptureRef }} />
       </TransitionProvider>
     </HelmetProvider>
   )

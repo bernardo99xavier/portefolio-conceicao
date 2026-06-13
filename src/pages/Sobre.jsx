@@ -1,4 +1,10 @@
 import { Helmet } from "react-helmet-async"
+import about1 from "../assets/img/about/about_1.webp"
+import about2 from "../assets/img/about/about_2.webp"
+import about3 from "../assets/img/about/about_3.webp"
+import about4 from "../assets/img/about/about_4.webp"
+
+const photos = [about1, about2, about3, about4]
 
 export default function Sobre() {
   return (
@@ -11,7 +17,17 @@ export default function Sobre() {
       </Helmet>
 
       <div className="page-grid">
-        <h1>Sobre</h1>
+        {photos.map((photo, i) => (
+          <div key={i} className="item-photo">
+            <img src={photo} alt={`Conceição — foto ${i + 1}`} />
+          </div>
+        ))}
+
+        <div className="sobre-text">
+          <p>Pereira Rute (n.2000, Fradelos), atualmente, reside no Porto, onde desenvolve os seus estudos, trabalho artístico e prática pedagógica na Escola Utopia e na Faculdade de Belas Artes da Universidade do Porto (FBAUP). Em 2018 ingressou no curso de Artes Plásticas da FBAUP, especializando-se em pintura a óleo. Encontra-se, de momento, a concluir o mestrado na mesma área e instituição.</p>
+          <p>Desde 2019 expõe regularmente, sobretudo no norte de Portugal. Destaca-se a participação na exposição inaugural "Minha Senhora de Mim" da Galeria Helena Rodrigues (2025, Porto), na Bienal Internacional de Arte de Espinho (2023) e na III Bienal da Ardósia de Valongo (2023, Residências Artísticas e Tecnológicas GroundLab). Foi distinguida com o 1º lugar no Prémio Joaquim Afonso Madeira (2024, XI Bienal de Pintura de Pequeno Formato, Moita) e no Prémio Árvore das Virtudes 2024 (Árvore - Cooperativa de Atividades Artísticas, Porto).</p>
+          <p>A sua prática artística investiga a relação entre indivíduo e sociedade, refletindo sobre a condição humana a partir de uma perspetiva informada pelo absurdo existencial. Interessa-lhe as tensões entre presença e ausência, o momento de suspensão e de confronto com o inevitável — espaços onde a identidade vacila e a experiência humana revela a sua fragilidade. Através da pintura, da impressão e do desenho, constrói imagens que exploram essa relação entre consciência individual e realidade quotidiana, integrando já coleções privadas.</p>
+        </div>
       </div>
     </>
   )

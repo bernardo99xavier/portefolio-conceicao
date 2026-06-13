@@ -2,6 +2,7 @@ import App from "./App"
 import Home from "./pages/Home"
 import Catalogo from "./pages/Catalogo"
 import CatalogoItem from "./pages/CatalogoItem"
+import Colecoes from "./pages/Colecoes"
 import Sobre from "./pages/Sobre"
 import { catalogue } from "./data/catalogue"
 
@@ -17,6 +18,7 @@ export const routes = [
         element: <CatalogoItem />,
         getStaticPaths: () => catalogue.map(item => `/catalogo/${item.id}`),
       },
+      { path: "colecoes", element: <Colecoes /> },
       { path: "sobre", element: <Sobre /> },
     ],
   },
