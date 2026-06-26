@@ -11,7 +11,6 @@ export const NAV_LOGO_TOP = 10
 
 function App() {
   const [lang, setLang] = useState("pt")
-  const [activeCategory, setActiveCategory] = useState("tudo")
   const [activeColor, setActiveColor] = useState(null)
   const [gridView, setGridView] = useState(() =>
     typeof window !== "undefined" && window.innerWidth < 768 ? 1 : 3
@@ -25,9 +24,20 @@ function App() {
     setGridView(newView)
   }
 
+  // Don't let the browser restore the previous scroll position on navigation
+  useEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual"
+    }
+  }, [])
+
+  // Always start at the top when the route changes
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [location.pathname])
+
   useEffect(() => {
     if (location.pathname === "/catalogo") {
-      setActiveCategory("tudo")
       setActiveColor(null)
     }
   }, [location.pathname])
@@ -61,11 +71,10 @@ function App() {
       <TransitionProvider>
         <Navbar
           lang={lang} setLang={setLang}
-          activeCategory={activeCategory} setActiveCategory={setActiveCategory}
           activeColor={activeColor} setActiveColor={setActiveColor}
           gridView={gridView} changeView={changeView}
         />
-        <Outlet context={{ lang, activeCategory, activeColor, gridView, flipCaptureRef }} />
+        <Outlet context={{ lang, activeColor, gridView, flipCaptureRef }} />
       </TransitionProvider>
     </HelmetProvider>
   )

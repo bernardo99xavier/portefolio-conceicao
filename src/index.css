@@ -117,6 +117,17 @@ nav img {
 nav a {
   color: inherit;
   text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+nav a:hover,
+.lang-switch span:hover {
+  opacity: 0.6;
+}
+
+.lang-switch span {
+  cursor: pointer;
+  transition: opacity 0.15s ease;
 }
 
 ul {
@@ -225,11 +236,17 @@ h1 {
   overflow: hidden;
   position: relative;
   z-index: 1;
+  border-radius: 12px;
 }
 
 .image-block--wide {
   grid-column: span 6;
   aspect-ratio: 3 / 2;
+}
+
+.image-block--tall {
+  grid-column: span 3;
+  aspect-ratio: 2 / 3;
 }
 
 .image-block-wrap {
@@ -262,6 +279,8 @@ h1 {
 
 .image-block--collection {
   position: relative;
+  border-radius: 12px;
+  box-sizing: border-box;
 }
 
 .image-block--collection .image-caption {
@@ -279,7 +298,7 @@ h1 {
   bottom: 0;
   left: 0;
   right: 0;
-  top: -50px;
+  top: -85px;
   background: linear-gradient(to top, #f3eee6, transparent);
   z-index: -1;
   pointer-events: none;
@@ -292,6 +311,15 @@ h1 {
 .image-caption__cta {
   border: 1px solid black;
   padding: 2px 6px;
+  border-radius: 12px;
+  text-transform: none;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.image-caption__cta:hover {
+  background: black;
+  color: #f3eee6;
 }
 
 .image-block img {
@@ -328,11 +356,6 @@ h1 {
   align-items: center;
   justify-content: center;
   gap: 0.3em;
-
-  background-image: url('./assets/gliph_right.svg'), url('./assets/gliph_left.svg');
-  background-repeat: no-repeat, no-repeat;
-  background-position: left center, right center;
-  background-size: auto 1.05em, auto 1.05em;
 }
 
 .homepage-topic::before,
@@ -354,6 +377,59 @@ h1 {
   background-image: url('./assets/gliph_right.svg');
 }
 
+/* Homepage — collections gallery */
+.collections-gallery {
+  grid-column: 1 / -1;
+  position: relative;
+  overflow: hidden;
+}
+
+.collections-gallery__track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 3 * var(--grid-gutter)) / 4);
+  gap: var(--grid-gutter);
+  will-change: transform;
+}
+
+.collections-gallery__track > .image-block {
+  grid-column: auto;
+}
+
+.gallery-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid black;
+  background: #f3eee6;
+  color: black;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.gallery-arrow:hover {
+  background: black;
+  color: #f3eee6;
+}
+
+.gallery-arrow--left {
+  left: 10px;
+}
+
+.gallery-arrow--right {
+  right: 10px;
+}
+
 .catalog-grid--1 .catalog-item { grid-column: span 12; }
 
 /* ── COLEÇÕES PAGE ── */
@@ -363,29 +439,38 @@ h1 {
 }
 
 .collection-group {
-  grid-column: 1 / -1;
+  grid-column: span 4;
   position: relative;
-  display: grid;
-  grid-template-columns: 7fr 5fr;
-  height: 300px;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
+  border-radius: 12px;
 }
 
-.collection-group::after {
+/* Stroke visible only at the rounded corners (masked corner brackets) */
+.collection-group::after,
+.image-block--collection::after {
   content: '';
   position: absolute;
-  right: 0;
-  bottom: 32px;
-  height: 30px;
-  aspect-ratio: 248 / 143;
-  background: url('./assets/gliph_left.svg') no-repeat center / contain;
-  z-index: 2;
+  inset: 0;
+  border: 1px solid black;
+  border-radius: 12px;
   pointer-events: none;
+  z-index: 3;
+
+  --corner: 20px;
+  -webkit-mask:
+    linear-gradient(#000 0 0) 0 100% / var(--corner) var(--corner) no-repeat,
+    linear-gradient(#000 0 0) 100% 100% / var(--corner) var(--corner) no-repeat;
+  mask:
+    linear-gradient(#000 0 0) 0 100% / var(--corner) var(--corner) no-repeat,
+    linear-gradient(#000 0 0) 100% 100% / var(--corner) var(--corner) no-repeat;
 }
 
 .collection-group__image-wrap {
   position: relative;
   overflow: hidden;
+  aspect-ratio: 16 / 10;
 }
 
 .collection-group__image-wrap img {
@@ -400,11 +485,9 @@ h1 {
 .collection-group__image-wrap::after {
   content: '';
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 25%;
-  background: linear-gradient(to right, transparent, #f3eee6);
+  inset: auto 0 0 0;
+  height: 25%;
+  background: linear-gradient(to bottom, transparent, #f3eee6);
   pointer-events: none;
 }
 
@@ -415,18 +498,18 @@ h1 {
   justify-content: flex-end;
   align-items: flex-start;
   text-align: left;
-  padding: 14px 0 0 40px;
+  padding: 12px 16px 14px 16px;
   gap: 6px;
 }
 
 .collection-group__cta {
   position: absolute;
-  right: 0;
-  bottom: 0;
+  right: 16px;
+  bottom: 14px;
 }
 
 .collection-group__title {
-  font-size: clamp(32px, 4vw, 64px);
+  font-size: clamp(26px, 3.2vw, 50px);
   font-weight: 400;
   letter-spacing: -1px;
   margin: 0;
@@ -437,7 +520,7 @@ h1 {
   font-size: 15px;
   line-height: 1.2;
   margin: 0;
-  max-width: 320px;
+  max-width: calc(100% - 170px);
   opacity: 0.7;
   text-align: left;
 }
@@ -449,6 +532,93 @@ h1 {
   .page-grid {
     gap: 4px;
   }
+
+  /* Nav: links spread evenly across the bar, clearing the fixed logo */
+  .nav-right {
+    flex: 1;
+    margin-left: 82px;
+    gap: 0;
+  }
+
+  .nav-links {
+    flex: 1;
+    justify-content: space-between;
+    gap: 0;
+  }
+
+  /* Homepage — every image spans all columns (one per row) */
+  .image-block--wide,
+  .image-block-wrap,
+  .image-block-wrap--narrow {
+    grid-column: 1 / -1;
+  }
+
+  .homepage-topic {
+    font-size: 24px;
+  }
+
+  /* Coleções — mobile: one group per row (stacked layout is in the base) */
+  .page-grid--colecoes {
+    row-gap: 16px;
+  }
+
+  .collection-group {
+    grid-column: 1 / -1;
+  }
+
+  /* no description on mobile, larger title */
+  .collection-group__desc {
+    display: none;
+  }
+
+  .collection-group__title {
+    font-size: 40px;
+  }
+
+  /* pull the Primaveras image down a bit on mobile (overrides inline) */
+  .collection-group__image-wrap img[alt="Primaveras"] {
+    object-position: center 65% !important;
+  }
+
+  /* Catálogo — fixed bottom bar (mirrors the navbar) */
+  .mobile-filter-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: var(--frame-top);
+    z-index: 1000;
+    box-sizing: border-box;
+    padding: 0 15px;
+    background: #f3eee6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* centered, doesn't block the side controls */
+  .mobile-filter-swatches-wrap {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  /* hidden until "Filtros" is tapped; GSAP slides + fades it in */
+  .mobile-filter-swatches {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .mobile-filter-swatches.is-open {
+    pointer-events: auto;
+  }
+
+  /* clear the fixed bar so the last items aren't hidden behind it */
+  [class*="catalog-grid--"] {
+    padding-bottom: 72px;
+  }
 }
 
 .catalog-item {
@@ -457,6 +627,7 @@ h1 {
   overflow: hidden;
   position: relative;
   cursor: pointer;
+  border-radius: 12px;
 }
 
 .catalog-item img {
@@ -516,6 +687,17 @@ h1 {
   width: 100%;
   height: auto;
   display: block;
+  border-radius: 0;
+}
+
+/* top image: round the top corners; last image: round the bottom corners
+   (.sobre-text is the final child, so the last photo is nth-last-child(2)) */
+.item-photo:first-child img {
+  border-radius: 12px 12px 0 0;
+}
+
+.item-photo:nth-last-child(2) img {
+  border-radius: 0 0 12px 12px;
 }
 
 .hero h1 {
@@ -651,4 +833,78 @@ h1 {
 .swatch.active {
   outline: 2px solid #000;
   outline-offset: 2px;
+}
+
+/* ── SOBRE — MOBILE ── */
+/* Placed after base rules so the mobile layout wins the cascade */
+@media (max-width: 767px) {
+  /* Gallery stays pinned below the navbar while the text scrolls */
+  .sobre-gallery {
+    grid-column: 1 / -1;
+    position: sticky;
+    top: var(--frame-top);
+    z-index: 2;
+    aspect-ratio: 1 / 1;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f3eee6;
+  }
+
+  .sobre-gallery img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+
+  .sobre-gallery img.active {
+    opacity: 1;
+  }
+
+  .sobre-gallery__dots {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    z-index: 1;
+  }
+
+  .sobre-gallery__dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: black;
+    opacity: 0.25;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .sobre-gallery__dot.active {
+    opacity: 1;
+  }
+
+  /* Text below the gallery, full width, scrolls normally */
+  .sobre-text {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    position: static;
+    height: auto;
+    align-self: auto;
+    padding-left: 0;
+    padding-top: 14px;
+    font-size: 16.5px;
+  }
+
+  .sobre-text p {
+    margin-bottom: 0.9em;
+  }
+
+  .sobre-text p:last-child {
+    margin-bottom: 0;
+  }
 }
