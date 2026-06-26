@@ -50,6 +50,12 @@ const collections = [
 export default function Colecoes() {
   const gridRef = useRef(null)
 
+  // Flag the body so the bottom frame border can be dropped on mobile here
+  useEffect(() => {
+    document.body.classList.add("colecoes-page")
+    return () => document.body.classList.remove("colecoes-page")
+  }, [])
+
   useEffect(() => {
     const groups = gsap.utils.toArray(
       gridRef.current.querySelectorAll(".collection-group")
