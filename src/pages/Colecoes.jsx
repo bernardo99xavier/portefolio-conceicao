@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react"
 import { Helmet } from "react-helmet-async"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import VerColecaoButton from "../components/VerColecaoButton"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -111,7 +112,7 @@ export default function Colecoes() {
             <div className="collection-group__text">
               <h2 className="collection-group__title">{title}</h2>
               <p className="collection-group__desc" lang="pt">{description}</p>
-              <span className="image-caption__cta collection-group__cta">Ver coleção</span>
+              <VerColecaoButton className="collection-group__cta" />
             </div>
           </div>
         ))}

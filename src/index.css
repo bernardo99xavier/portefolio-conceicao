@@ -244,11 +244,6 @@ h1 {
   aspect-ratio: 3 / 2;
 }
 
-.image-block--tall {
-  grid-column: span 3;
-  aspect-ratio: 2 / 3;
-}
-
 .image-block-wrap {
   display: flex;
   flex-direction: column;
