@@ -112,7 +112,7 @@ export default function Home() {
       {
         xPercent: -50, yPercent: -50,
         x: 0, y: 0,
-        scale: () => (window.innerWidth * 0.4) / logo.offsetWidth,
+        scale: () => (window.innerWidth * (window.innerWidth < 768 ? 0.7 : 0.4)) / logo.offsetWidth,
       },
       {
         xPercent: 0, yPercent: 0,
