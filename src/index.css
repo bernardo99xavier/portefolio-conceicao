@@ -557,8 +557,10 @@ h1 {
     grid-auto-columns: 100%;
   }
 
-  /* Catálogo: drop the bottom beige frame (the fixed filter bar covers it) */
-  body.catalog-page::before {
+  /* Drop the fixed bottom frame border on mobile: it desyncs with the
+     browser's dynamic address bar on scroll, flashing a beige bar.
+     The page's padding-bottom + beige body background keep the bottom margin. */
+  body::before {
     border-bottom-width: 0;
   }
 

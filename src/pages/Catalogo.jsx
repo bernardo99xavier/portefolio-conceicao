@@ -29,13 +29,6 @@ export default function Catalogo() {
     window.scrollTo(0, 0)
   }, [])
 
-  // Flag the body so the bottom frame can be dropped on mobile
-  // (the fixed filter bar already covers the bottom there)
-  useEffect(() => {
-    document.body.classList.add("catalog-page")
-    return () => document.body.classList.remove("catalog-page")
-  }, [])
-
   useLayoutEffect(() => {
     if (!gridRef.current) return
     const items = gridRef.current.querySelectorAll(".catalog-item")
