@@ -13,7 +13,12 @@
 body::before {
   content: "";
   position: fixed;
-  inset: 0;
+  /* height tracks the dynamic viewport so the bottom border follows the
+     mobile address bar instead of lagging behind it on scroll */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100dvh;
   pointer-events: none;
   z-index: 10;
 
@@ -23,7 +28,7 @@ body::before {
   border-left: 15px solid #f3eee6;
   border-right: 15px solid #f3eee6;
   border-bottom: 15px solid #f3eee6;
-  
+
 }
 
 /* RESET */
@@ -557,10 +562,8 @@ h1 {
     grid-auto-columns: 100%;
   }
 
-  /* Drop the fixed bottom frame border on mobile: it desyncs with the
-     browser's dynamic address bar on scroll, flashing a beige bar.
-     The page's padding-bottom + beige body background keep the bottom margin. */
-  body::before {
+  /* Coleções: no bottom frame border on mobile */
+  body.colecoes-page::before {
     border-bottom-width: 0;
   }
 
