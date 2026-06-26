@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { NAV_LOGO_LEFT, NAV_LOGO_TOP } from "../App"
+import VerColecaoButton from "../components/VerColecaoButton"
 
 import heroVideo from "../assets/videos/hp_v001.webm"
 import img5 from "../assets/img/homepage/hp_p005.webp"
@@ -259,10 +260,6 @@ export default function Home() {
 
       <div className="page-grid page-grid--home">
 
-        {[0, 1, 2, 3].map(i => (
-          <div key={`tall-${i}`} className="image-block image-block--tall" />
-        ))}
-
         <p className="homepage-topic" ref={malasRef}>MALAS</p>
 
         {wideImages.map((src, i) => (
@@ -289,7 +286,7 @@ export default function Home() {
                 <div className="image-caption">
                   <div className="image-caption__text">
                     <span className="image-caption__title">{title}</span>
-                    <span className="image-caption__cta">Ver coleção</span>
+                    <VerColecaoButton />
                   </div>
                 </div>
               </div>
