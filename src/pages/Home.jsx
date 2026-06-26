@@ -1,21 +1,22 @@
 import { useEffect, useRef } from "react"
-import { useOutletContext } from "react-router-dom"
 import { Helmet } from "react-helmet-async"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { NAV_LOGO_LEFT, NAV_LOGO_TOP } from "../App"
 
 import heroVideo from "../assets/videos/hp_v001.webm"
-import img1 from "../assets/img/homepage/hp_p001.webp"
-import img2 from "../assets/img/homepage/hp_p002.webp"
-import img3 from "../assets/img/homepage/hp_p003.webp"
-import img4 from "../assets/img/homepage/hp_p004.webp"
 import img5 from "../assets/img/homepage/hp_p005.webp"
 import img6 from "../assets/img/homepage/hp_p006.webp"
 import img7 from "../assets/img/homepage/hp_p007.webp"
 import img8 from "../assets/img/homepage/hp_p008.webp"
 
-import Hero from "../sections/Hero"
+import imgNervuras from "../assets/img/collections/nervuras_thumbnail.webp"
+import imgFolhas from "../assets/img/collections/folhas_thumbnail.webp"
+import imgPrimaveras from "../assets/img/collections/primaveras_thumbnail.webp"
+import imgChavetas from "../assets/img/collections/chavetas_thumbnail.webp"
+import imgPregas from "../assets/img/collections/pregas_thumbnail.webp"
+import imgPastas from "../assets/img/collections/pastas_thumbnail.webp"
+
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -42,13 +43,10 @@ function useScrollReveal(ref) {
 }
 
 export default function Home() {
-  const { lang } = useOutletContext()
   const taglineRef = useRef(null)
   const malasRef = useRef(null)
-  const collectionsRef = useRef(null)
 
   useScrollReveal(malasRef)
-  useScrollReveal(collectionsRef)
 
   useEffect(() => {
     const captions = gsap.utils.toArray(".image-caption__text")
@@ -203,11 +201,42 @@ export default function Home() {
   const wideImages = [img5, img6, img7, img8]
 
   const collectionImages = [
-    { src: img1, title: "Veias" },
-    { src: img2, title: "Folhas" },
-    { src: img3, title: "Margaridas" },
-    { src: img4, title: "Chaves" },
+    { src: imgNervuras, title: "Nervuras" },
+    { src: imgFolhas, title: "Folhas" },
+    { src: imgPrimaveras, title: "Primaveras" },
+    { src: imgChavetas, title: "Chavetas" },
+    { src: imgPregas, title: "Pregas" },
+    { src: imgPastas, title: "Pastas" },
   ]
+
+  // Gallery — duplicated pool so the strip can slide and loop seamlessly
+  const galleryPool = [...collectionImages, ...collectionImages]
+  const galleryTrackRef = useRef(null)
+
+  const moveGallery = (dir) => {
+    const track = galleryTrackRef.current
+    if (!track || gsap.isTweening(track)) return
+    const gap = parseFloat(getComputedStyle(track).columnGap) || 0
+    const step = track.children[0].offsetWidth + gap
+    const loop = step * collectionImages.length
+    gsap.to(track, {
+      x: `-=${dir * step}`,
+      duration: 0.5,
+      ease: "power3.inOut",
+      modifiers: {
+        x: gsap.utils.unitize(gsap.utils.wrap(-loop, 0)),
+      },
+    })
+  }
+
+  // keep the strip aligned to the grid after a resize
+  useEffect(() => {
+    const onResize = () => {
+      if (galleryTrackRef.current) gsap.set(galleryTrackRef.current, { x: 0 })
+    }
+    window.addEventListener("resize", onResize)
+    return () => window.removeEventListener("resize", onResize)
+  }, [])
 
   return (
     <>
@@ -230,6 +259,10 @@ export default function Home() {
 
       <div className="page-grid page-grid--home">
 
+        {[0, 1, 2, 3].map(i => (
+          <div key={`tall-${i}`} className="image-block image-block--tall" />
+        ))}
+
         <p className="homepage-topic" ref={malasRef}>MALAS</p>
 
         {wideImages.map((src, i) => (
@@ -238,37 +271,41 @@ export default function Home() {
           </div>
         ))}
 
-        <p className="homepage-topic" ref={collectionsRef}>COLEÇÕES</p>
+        <div className="collections-gallery">
+          <button
+            className="gallery-arrow gallery-arrow--left"
+            onClick={() => moveGallery(-1)}
+            aria-label="Ver coleções anteriores"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M9 2 L4 7 L9 12" />
+            </svg>
+          </button>
 
-        {collectionImages.map(({ src, title }) => (
-          <div key={title} className="image-block-wrap image-block-wrap--narrow">
-            <div className="image-block image-block--collection">
-              <img src={src} />
-              <div className="image-caption">
-                <div className="image-caption__text">
-                  <span className="image-caption__title">{title}</span>
-                  <span className="image-caption__cta">Ver coleção</span>
+          <div className="collections-gallery__track" ref={galleryTrackRef}>
+            {galleryPool.map(({ src, title }, i) => (
+              <div key={`slot-${i}`} className="image-block image-block--collection">
+                <img src={src} />
+                <div className="image-caption">
+                  <div className="image-caption__text">
+                    <span className="image-caption__title">{title}</span>
+                    <span className="image-caption__cta">Ver coleção</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
-        ))}
 
-        {collectionImages.map(({ src, title }) => (
-          <div key={`repeat-${title}`} className="image-block-wrap image-block-wrap--narrow">
-            <div className="image-block image-block--collection">
-              <img src={src} />
-              <div className="image-caption">
-                <div className="image-caption__text">
-                  <span className="image-caption__title">{title}</span>
-                  <span className="image-caption__cta">Ver coleção</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-
-        <Hero lang={lang} />
+          <button
+            className="gallery-arrow gallery-arrow--right"
+            onClick={() => moveGallery(1)}
+            aria-label="Ver coleções seguintes"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M5 2 L10 7 L5 12" />
+            </svg>
+          </button>
+        </div>
       </div>
     </>
   )

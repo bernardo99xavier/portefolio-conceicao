@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useMemo } from "react"
+import { useRef, useState, useEffect } from "react"
 import { useLocation } from "react-router-dom"
 import gsap from "gsap"
 import logo from "../assets/logo_cf.svg"
@@ -27,7 +27,7 @@ function GridIcon({ cols }) {
   )
 }
 
-function Navbar({ lang, setLang, activeCategory, setActiveCategory, activeColor, setActiveColor, gridView, changeView }) {
+function Navbar({ lang, setLang, activeColor, setActiveColor, gridView, changeView }) {
   const { transitionTo } = useTransition()
   const location = useLocation()
   const [filterOpen, setFilterOpen] = useState(false)
@@ -45,6 +45,8 @@ function Navbar({ lang, setLang, activeCategory, setActiveCategory, activeColor,
   const viewOptions = isMobile ? [1, 2, 3] : [2, 3, 4]
   const filterRef = useRef(null)
   const dropdownRef = useRef(null)
+  const mobileBarRef = useRef(null)
+  const mobileSwatchesRef = useRef(null)
 
   const handleNavigate = (path) => {
     if (location.pathname === path) return
@@ -56,18 +58,37 @@ function Navbar({ lang, setLang, activeCategory, setActiveCategory, activeColor,
   }
 
   const closeFilter = () => {
-    if (!dropdownRef.current) return
-    gsap.to(dropdownRef.current, {
-      opacity: 0,
-      y: -6,
-      duration: 0.15,
-      ease: "power2.in",
-      onComplete: () => setFilterOpen(false),
-    })
+    // Animate whichever filter UI is currently mounted (mobile bar or desktop dropdown)
+    if (mobileSwatchesRef.current) {
+      gsap.to(mobileSwatchesRef.current, {
+        opacity: 0,
+        x: 30,
+        duration: 0.2,
+        ease: "power2.in",
+        onComplete: () => setFilterOpen(false),
+      })
+    } else if (dropdownRef.current) {
+      gsap.to(dropdownRef.current, {
+        opacity: 0,
+        y: -6,
+        duration: 0.15,
+        ease: "power2.in",
+        onComplete: () => setFilterOpen(false),
+      })
+    } else {
+      setFilterOpen(false)
+    }
   }
 
   useEffect(() => {
-    if (filterOpen && dropdownRef.current) {
+    if (!filterOpen) return
+    if (mobileSwatchesRef.current) {
+      gsap.fromTo(
+        mobileSwatchesRef.current,
+        { opacity: 0, x: 30 },
+        { opacity: 1, x: 0, duration: 0.3, ease: "power2.out" }
+      )
+    } else if (dropdownRef.current) {
       gsap.fromTo(
         dropdownRef.current,
         { opacity: 0, y: -6 },
@@ -78,7 +99,9 @@ function Navbar({ lang, setLang, activeCategory, setActiveCategory, activeColor,
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (filterRef.current && !filterRef.current.contains(e.target)) {
+      const inDesktop = filterRef.current && filterRef.current.contains(e.target)
+      const inMobile = mobileBarRef.current && mobileBarRef.current.contains(e.target)
+      if (!inDesktop && !inMobile) {
         closeFilter()
       }
     }
@@ -97,91 +120,107 @@ function Navbar({ lang, setLang, activeCategory, setActiveCategory, activeColor,
   const isSwatchActive = (colorId) =>
     colorId === "multi" ? activeColor === null : activeColor === colorId
 
-  return (
-    <nav>
-      <h1 className="nav-logo" onClick={() => handleNavigate("/")}>
-        <img src={logo} alt="Logo" />
-      </h1>
+  const isCatalog = location.pathname === "/catalogo"
 
-      {location.pathname === "/catalogo" && (
-        <div className="nav-filter-wrapper" ref={filterRef}>
+  const swatches = COLORS.map(color => (
+    <div
+      key={color.id}
+      className={`swatch swatch--${color.id}${isSwatchActive(color.id) ? " active" : ""}`}
+      style={color.css ? { background: color.css } : undefined}
+      onClick={() => handleColorClick(color.id)}
+      title={color.id}
+    />
+  ))
+
+  const viewControls = (
+    <div className="nav-view-controls">
+      {viewOptions.map(n => (
+        <button
+          key={n}
+          className={`nav-view-btn${gridView === n ? " active" : ""}`}
+          onClick={() => changeView(n)}
+          title={`${n} columns`}
+        >
+          <GridIcon cols={n} />
+        </button>
+      ))}
+    </div>
+  )
+
+  return (
+    <>
+      <nav>
+        <h1 className="nav-logo" onClick={() => handleNavigate("/")}>
+          <img src={logo} alt="Logo" />
+        </h1>
+
+        {isCatalog && !isMobile && (
+          <div className="nav-filter-wrapper" ref={filterRef}>
+            <button
+              className="nav-filter-btn"
+              onClick={() => filterOpen ? closeFilter() : openFilter()}
+            >
+              FILTROS
+            </button>
+
+            {filterOpen && (
+              <div className="filter-dropdown" ref={dropdownRef}>
+                <div className="filter-swatches">{swatches}</div>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="nav-right">
+          {isCatalog && !isMobile && viewControls}
+
+          <ul className="nav-links">
+            <li>
+              <a href="/catalogo" onClick={(e) => { e.preventDefault(); handleNavigate("/catalogo") }}>
+                CATÁLOGO
+              </a>
+            </li>
+            <li>
+              <a href="/colecoes" onClick={(e) => { e.preventDefault(); handleNavigate("/colecoes") }}>
+                COLEÇÕES
+              </a>
+            </li>
+            <li>
+              <a href="/sobre" onClick={(e) => { e.preventDefault(); handleNavigate("/sobre") }}>
+                SOBRE
+              </a>
+            </li>
+            <li className="lang-switch">
+              <span onClick={() => setLang("en")}>EN</span>
+              <span> | </span>
+              <span onClick={() => setLang("pt")}>PT</span>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      {isCatalog && isMobile && (
+        <div className="mobile-filter-bar" ref={mobileBarRef}>
+          {viewControls}
+
+          <div className="mobile-filter-swatches-wrap">
+            <div
+              className={`filter-swatches mobile-filter-swatches${filterOpen ? " is-open" : ""}`}
+              ref={mobileSwatchesRef}
+            >
+              {swatches}
+            </div>
+          </div>
+
           <button
             className="nav-filter-btn"
             onClick={() => filterOpen ? closeFilter() : openFilter()}
           >
             FILTROS
           </button>
-
-          {filterOpen && (
-            <div className="filter-dropdown" ref={dropdownRef}>
-              <div className="filter-categories">
-                {["tudo", "malas", "sapatos", "acessórios"].map(cat => (
-                  <span
-                    key={cat}
-                    className={`filter-cat${activeCategory === cat ? " active" : ""}`}
-                    onClick={() => setActiveCategory(cat)}
-                  >
-                    {cat.toUpperCase()}
-                  </span>
-                ))}
-              </div>
-
-              <div className="filter-swatches">
-                {COLORS.map(color => (
-                  <div
-                    key={color.id}
-                    className={`swatch swatch--${color.id}${isSwatchActive(color.id) ? " active" : ""}`}
-                    style={color.css ? { background: color.css } : undefined}
-                    onClick={() => handleColorClick(color.id)}
-                    title={color.id}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       )}
-
-      <div className="nav-right">
-        {location.pathname === "/catalogo" && (
-          <div className="nav-view-controls">
-            {viewOptions.map(n => (
-              <button
-                key={n}
-                className={`nav-view-btn${gridView === n ? " active" : ""}`}
-                onClick={() => changeView(n)}
-                title={`${n} columns`}
-              >
-                <GridIcon cols={n} />
-              </button>
-            ))}
-          </div>
-        )}
-
-        <ul className="nav-links">
-          <li>
-            <a href="/catalogo" onClick={(e) => { e.preventDefault(); handleNavigate("/catalogo") }}>
-              CATÁLOGO
-            </a>
-          </li>
-          <li>
-            <a href="/colecoes" onClick={(e) => { e.preventDefault(); handleNavigate("/colecoes") }}>
-              COLEÇÕES
-            </a>
-          </li>
-          <li>
-            <a href="/sobre" onClick={(e) => { e.preventDefault(); handleNavigate("/sobre") }}>
-              SOBRE
-            </a>
-          </li>
-          <li className="lang-switch">
-            <span onClick={() => setLang("en")}>EN</span>
-            <span> | </span>
-            <span onClick={() => setLang("pt")}>PT</span>
-          </li>
-        </ul>
-      </div>
-    </nav>
+    </>
   )
 }
 

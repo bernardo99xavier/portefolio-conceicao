@@ -9,7 +9,7 @@ import { catalogue } from "../data/catalogue"
 gsap.registerPlugin(Flip)
 
 export default function Catalogo() {
-  const { activeCategory, activeColor, gridView, flipCaptureRef } = useOutletContext()
+  const { activeColor, gridView, flipCaptureRef } = useOutletContext()
   const { transitionTo } = useTransition()
   const gridRef = useRef(null)
   const flipStateRef = useRef(null)
@@ -42,7 +42,7 @@ export default function Catalogo() {
       })
     }, gridRef)
     return () => ctx.revert()
-  }, [activeCategory, activeColor])
+  }, [activeColor])
 
   useEffect(() => {
     flipCaptureRef.current = () => {
@@ -66,11 +66,7 @@ export default function Catalogo() {
 
   const shuffled = useMemo(() => [...catalogue].sort(() => Math.random() - 0.5), [])
 
-  const categoryPrefix = { malas: "M", sapatos: "S", "acessórios": "A" }
-
   const filtered = shuffled.filter(item => {
-    const prefix = categoryPrefix[activeCategory]
-    if (prefix && !item.code.startsWith(prefix)) return false
     if (activeColor && item.color !== activeColor) return false
     return true
   })
