@@ -34,6 +34,7 @@ body::before {
 /* RESET */
 html, body {
   scrollbar-width: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html::-webkit-scrollbar,
@@ -202,7 +203,8 @@ h1 {
   position: relative;
   z-index: 1;
   text-align: center;
-  font-size: clamp(36px, 5vw, 72px);
+  font-size: clamp(48px, 5vw, 72px);
+  line-height: 50px;
   font-weight: 300;
   letter-spacing: -0.5px;
   color: white;
@@ -562,15 +564,7 @@ h1 {
     grid-auto-columns: 100%;
   }
 
-  /* Item page: each photo spans all columns */
-  .item-photo {
-    grid-column: 1 / -1;
-  }
 
-  /* Coleções: no bottom frame border on mobile */
-  body.colecoes-page::before {
-    border-bottom-width: 0;
-  }
 
   /* Coleções — mobile: one group per row (stacked layout is in the base) */
   .page-grid--colecoes {
@@ -670,6 +664,11 @@ h1 {
   grid-column: 1 / span 7;
 }
 
+/* Catalogue item page: each photo spans all columns */
+.page-grid--item .item-photo {
+  grid-column: 1 / -1;
+}
+
 .sobre-text {
   grid-column: 8 / span 5;
   grid-row: 1 / span 4;
@@ -713,6 +712,23 @@ h1 {
 
 .item-photo:nth-last-child(2) img {
   border-radius: 0 0 12px 12px;
+}
+
+/* Item page: photos are the only children, so first = top, last = bottom */
+.page-grid--item .item-photo img {
+  border-radius: 0;
+}
+
+.page-grid--item .item-photo:first-child img {
+  border-radius: 12px 12px 0 0;
+}
+
+.page-grid--item .item-photo:last-child img {
+  border-radius: 0 0 12px 12px;
+}
+
+.page-grid--item .item-photo:only-child img {
+  border-radius: 12px;
 }
 
 .hero h1 {

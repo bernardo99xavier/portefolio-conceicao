@@ -27,7 +27,7 @@ export default function CatalogoItem() {
         <meta property="og:type" content="product" />
       </Helmet>
 
-      <div className="page-grid">
+      <div className="page-grid page-grid--item">
         {item.photos.map((photo, i) => (
           <div key={i} className="item-photo">
             <img src={photo} alt={`${item.id} — foto ${i + 1}`} />
