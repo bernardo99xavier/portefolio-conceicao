@@ -48,9 +48,9 @@ export default function Sobre() {
 
   const sobreText = (
     <div className="sobre-text">
-      <p>Pereira Rute (n.2000, Fradelos), atualmente, reside no Porto, onde desenvolve os seus estudos, trabalho artístico e prática pedagógica na Escola Utopia e na Faculdade de Belas Artes da Universidade do Porto (FBAUP). Em 2018 ingressou no curso de Artes Plásticas da FBAUP, especializando-se em pintura a óleo. Encontra-se, de momento, a concluir o mestrado na mesma área e instituição.</p>
-      <p>Desde 2019 expõe regularmente, sobretudo no norte de Portugal. Destaca-se a participação na exposição inaugural "Minha Senhora de Mim" da Galeria Helena Rodrigues (2025, Porto), na Bienal Internacional de Arte de Espinho (2023) e na III Bienal da Ardósia de Valongo (2023, Residências Artísticas e Tecnológicas GroundLab). Foi distinguida com o 1º lugar no Prémio Joaquim Afonso Madeira (2024, XI Bienal de Pintura de Pequeno Formato, Moita) e no Prémio Árvore das Virtudes 2024 (Árvore - Cooperativa de Atividades Artísticas, Porto).</p>
-      <p>A sua prática artística investiga a relação entre indivíduo e sociedade, refletindo sobre a condição humana a partir de uma perspetiva informada pelo absurdo existencial. Interessa-lhe as tensões entre presença e ausência, o momento de suspensão e de confronto com o inevitável — espaços onde a identidade vacila e a experiência humana revela a sua fragilidade. Através da pintura, da impressão e do desenho, constrói imagens que exploram essa relação entre consciência individual e realidade quotidiana, integrando já coleções privadas.</p>
+      <p>Conceição Fernandes é artesã do couro como quem cultiva raízes: com paciência, com as mãos e com o tempo. Cresceu numa família ligada à indústria pesqueira, mas desde cedo soube que o seu caminho seria outro. Aos 15 anos já cosia as roupas e as malas que levava para a escola. O talento estava presente; só precisava de espaço para crescer.</p>
+      <p>Hoje, cada peça que cria é única e intemporal. Inspirada pela natureza e pelo ritmo profundo do universo, trabalha exclusivamente com couro reutilizado, dando uma nova vida a peles descontinuadas da indústria do calçado que, de outra forma, seriam desperdiçadas. Este processo reflete os princípios da economia circular, mas representa também um gesto de beleza, mostrando que aquilo que parece perdido pode voltar a florescer.</p>
+      <p>Há quase 30 anos que leva este trabalho às feiras medievais, onde as suas peças encontram quem as reconhece pelo que verdadeiramente são: feitas à mão, feitas para durar e feitas com alma.</p>
     </div>
   )
 
@@ -58,7 +58,7 @@ export default function Sobre() {
     <>
       <Helmet>
         <title>Sobre — Conceição</title>
-        <meta name="description" content="Sobre Conceição — prática artística visual." />
+        <meta name="description" content="Sobre Conceição Fernandes — artesã do couro, com peças únicas em couro reutilizado." />
         <meta property="og:title" content="Sobre — Conceição" />
         <meta property="og:type" content="website" />
       </Helmet>

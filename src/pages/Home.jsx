@@ -1,15 +1,12 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useMemo } from "react"
 import { Helmet } from "react-helmet-async"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { NAV_LOGO_LEFT, NAV_LOGO_TOP } from "../App"
 import VerColecaoButton from "../components/VerColecaoButton"
+import { catalogue } from "../data/catalogue"
 
 import heroVideo from "../assets/videos/hp_v001.webm"
-import img5 from "../assets/img/homepage/hp_p005.webp"
-import img6 from "../assets/img/homepage/hp_p006.webp"
-import img7 from "../assets/img/homepage/hp_p007.webp"
-import img8 from "../assets/img/homepage/hp_p008.webp"
 
 import imgNervuras from "../assets/img/collections/nervuras_thumbnail.webp"
 import imgFolhas from "../assets/img/collections/folhas_thumbnail.webp"
@@ -150,6 +147,11 @@ export default function Home() {
   useEffect(() => {
     const navLinks = document.querySelector(".nav-links")
 
+    // On mobile the beige page shows up later in the scroll, so reveal later
+    const isMobile = window.innerWidth < 768
+    const start = isMobile ? "95% top" : "71% top"
+    const end = isMobile ? "101% top" : "77% top"
+
     const tween = gsap.fromTo(
       navLinks,
       { opacity: 0, y: 14 },
@@ -159,8 +161,8 @@ export default function Home() {
         ease: "none",
         scrollTrigger: {
           trigger: ".hero-scene",
-          start: "71% top",
-          end: "77% top",
+          start,
+          end,
           scrub: 1,
         },
       }
@@ -199,7 +201,23 @@ export default function Home() {
     }
   }, [])
 
-  const wideImages = [img5, img6, img7, img8]
+  // 4 random catalogue thumbnails, each a different colour, re-picked per load
+  const wideImages = useMemo(() => {
+    const byColor = {}
+    for (const item of catalogue) {
+      if (!item.photos[0]) continue
+      ;(byColor[item.color] ||= []).push(item)
+    }
+    const colors = Object.keys(byColor)
+    for (let i = colors.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[colors[i], colors[j]] = [colors[j], colors[i]]
+    }
+    return colors.slice(0, 4).map(c => {
+      const items = byColor[c]
+      return items[Math.floor(Math.random() * items.length)].photos[0]
+    })
+  }, [])
 
   const collectionImages = [
     { src: imgNervuras, title: "Nervuras" },

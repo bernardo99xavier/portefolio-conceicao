@@ -50,12 +50,6 @@ const collections = [
 export default function Colecoes() {
   const gridRef = useRef(null)
 
-  // Flag the body so the bottom frame border can be dropped on mobile here
-  useEffect(() => {
-    document.body.classList.add("colecoes-page")
-    return () => document.body.classList.remove("colecoes-page")
-  }, [])
-
   useEffect(() => {
     const groups = gsap.utils.toArray(
       gridRef.current.querySelectorAll(".collection-group")
@@ -71,7 +65,7 @@ export default function Colecoes() {
 
     // Reveal (staggered per row) when a group scrolls into view
     const revealTriggers = ScrollTrigger.batch(groups, {
-      start: "top 88%",
+      start: "top 95%",
       onEnter: batch =>
         gsap.to(batch, {
           x: 0,

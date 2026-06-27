@@ -42,7 +42,7 @@ function Navbar({ lang, setLang, activeColor, setActiveColor, gridView, changeVi
     return () => mq.removeEventListener("change", handler)
   }, [])
 
-  const viewOptions = isMobile ? [1, 2, 3] : [2, 3, 4]
+  const viewOptions = isMobile ? [1, 2] : [2, 3, 4]
   const filterRef = useRef(null)
   const dropdownRef = useRef(null)
   const mobileBarRef = useRef(null)
