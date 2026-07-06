@@ -623,35 +623,19 @@ h1 {
     grid-column: 1 / -1;
   }
 
-  /* Story section: stack video on top, text below */
+  /* Story section: no video on mobile, text only, generous vertical breathing room */
   .story-section {
     grid-template-columns: 1fr;
     height: auto;
   }
 
   .story-section__video-wrap {
-    aspect-ratio: 16 / 10;
-  }
-
-  .story-section__video-wrap::after {
-    top: auto;
-    left: 0;
-    width: auto;
-    height: 30%;
-    background: linear-gradient(to bottom, transparent, #f3eee6);
+    display: none;
   }
 
   .story-section__text {
-    padding: 14px 0 0 0;
-  }
-
-  /* keep the video on top regardless of source order (reverse variant) */
-  .story-section--reverse .story-section__video-wrap {
-    order: -1;
-  }
-
-  .story-section--reverse .story-section__text {
-    padding: 14px 0 0 0;
+    padding: 38px 10px;
+    text-align: center;
   }
 
   .homepage-topic {
@@ -838,14 +822,17 @@ h1 {
 
 .nav-logo {
   position: fixed;
-  top: 50%;
-  left: 50%;
+  /* anchored top-left so the docked position is fixed pixels, immune to the
+     mobile address bar changing the viewport height (which used to drift it) */
+  top: 0;
+  left: 0;
   width: fit-content;
   height: auto;
   z-index: 1001;
 
   filter: brightness(0) invert(1);
-  transform: translate(-50%, -50%);
+  /* centered by default for the pre-JS paint; GSAP takes over the transform */
+  transform: translate(50vw, 50vh) translate(-50%, -50%);
   pointer-events: none;
 }
 
