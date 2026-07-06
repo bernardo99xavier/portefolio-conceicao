@@ -46,8 +46,24 @@ export function AudioProvider({ children }) {
     }
     START_EVENTS.forEach(evt => window.addEventListener(evt, start))
 
+    // Only play while the page is actually visible (phone unlocked, tab in
+    // foreground). Pause when hidden (phone locked / backgrounded), resume after.
+    const handleVisibility = () => {
+      if (!startedRef.current) return
+      if (document.visibilityState === "hidden") {
+        audio.pause()
+        cancelAnimationFrame(rafRef.current)
+      } else {
+        audio.play()
+          .then(() => { rafRef.current = requestAnimationFrame(tick) })
+          .catch(() => {})
+      }
+    }
+    document.addEventListener("visibilitychange", handleVisibility)
+
     return () => {
       audio.removeEventListener("ended", handleEnded)
+      document.removeEventListener("visibilitychange", handleVisibility)
       cancelAnimationFrame(rafRef.current)
       audio.pause()
       START_EVENTS.forEach(evt => window.removeEventListener(evt, start))
