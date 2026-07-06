@@ -166,7 +166,8 @@ h1 {
   grid-column: 1 / -1;
 }
 
-.image-full img {
+.image-full img,
+.image-full video {
   width: 100%;
   height: auto;
   display: block;
@@ -243,12 +244,77 @@ h1 {
   overflow: hidden;
   position: relative;
   z-index: 1;
-  border-radius: 12px;
 }
 
 .image-block--wide {
   grid-column: span 6;
   aspect-ratio: 3 / 2;
+}
+
+.image-block--triple {
+  grid-column: span 4;
+  aspect-ratio: 3 / 2;
+}
+
+/* Homepage — story section: video left (fades to bg on the right), text right */
+.story-section {
+  grid-column: 1 / -1;
+  position: relative;
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  height: 420px;
+  overflow: hidden;
+}
+
+.story-section__video-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.story-section__video-wrap video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.story-section__video-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 35%;
+  background: linear-gradient(to right, transparent, #f3eee6);
+  pointer-events: none;
+}
+
+.story-section__text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 50px 0 50px;
+}
+
+.story-section__text p {
+  font-size: clamp(22px, 2.6vw, 34px);
+  font-weight: 300;
+  letter-spacing: -0.3px;
+  line-height: 1.15;
+  margin: 0;
+}
+
+/* Reverse variant: text left, video right (fade on the video's left edge) */
+@media (min-width: 768px) {
+  .story-section--reverse {
+    grid-template-columns: 5fr 7fr;
+  }
+
+  .story-section--reverse .story-section__video-wrap::after {
+    right: auto;
+    left: 0;
+    background: linear-gradient(to left, transparent, #f3eee6);
+  }
 }
 
 .image-block-wrap {
@@ -324,7 +390,8 @@ h1 {
   color: #f3eee6;
 }
 
-.image-block img {
+.image-block img,
+.image-block video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -550,9 +617,41 @@ h1 {
 
   /* Homepage — every image spans all columns (one per row) */
   .image-block--wide,
+  .image-block--triple,
   .image-block-wrap,
   .image-block-wrap--narrow {
     grid-column: 1 / -1;
+  }
+
+  /* Story section: stack video on top, text below */
+  .story-section {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .story-section__video-wrap {
+    aspect-ratio: 16 / 10;
+  }
+
+  .story-section__video-wrap::after {
+    top: auto;
+    left: 0;
+    width: auto;
+    height: 30%;
+    background: linear-gradient(to bottom, transparent, #f3eee6);
+  }
+
+  .story-section__text {
+    padding: 14px 0 0 0;
+  }
+
+  /* keep the video on top regardless of source order (reverse variant) */
+  .story-section--reverse .story-section__video-wrap {
+    order: -1;
+  }
+
+  .story-section--reverse .story-section__text {
+    padding: 14px 0 0 0;
   }
 
   .homepage-topic {
@@ -636,7 +735,6 @@ h1 {
   overflow: hidden;
   position: relative;
   cursor: pointer;
-  border-radius: 12px;
 }
 
 .catalog-item img {
@@ -673,7 +771,7 @@ h1 {
   grid-column: 8 / span 5;
   grid-row: 1 / span 4;
   font-size: 17px;
-  letter-spacing: 0.15px;
+  letter-spacing: 0px;
   line-height: 1.13;
   text-align: left;
 

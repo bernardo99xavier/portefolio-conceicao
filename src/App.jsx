@@ -4,6 +4,7 @@ import { HelmetProvider } from "react-helmet-async"
 import gsap from "gsap"
 
 import { TransitionProvider } from "./context/TransitionContext"
+import { AudioProvider } from "./context/AudioContext"
 import Navbar from "./components/Navbar"
 
 export const NAV_LOGO_LEFT = 15
@@ -68,14 +69,16 @@ function App() {
 
   return (
     <HelmetProvider>
-      <TransitionProvider>
-        <Navbar
-          lang={lang} setLang={setLang}
-          activeColor={activeColor} setActiveColor={setActiveColor}
-          gridView={gridView} changeView={changeView}
-        />
-        <Outlet context={{ lang, activeColor, gridView, flipCaptureRef }} />
-      </TransitionProvider>
+      <AudioProvider>
+        <TransitionProvider>
+          <Navbar
+            lang={lang} setLang={setLang}
+            activeColor={activeColor} setActiveColor={setActiveColor}
+            gridView={gridView} changeView={changeView}
+          />
+          <Outlet context={{ lang, activeColor, gridView, flipCaptureRef }} />
+        </TransitionProvider>
+      </AudioProvider>
     </HelmetProvider>
   )
 }
