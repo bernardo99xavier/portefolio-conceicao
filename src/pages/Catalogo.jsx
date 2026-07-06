@@ -93,6 +93,8 @@ export default function Catalogo() {
             )}
           </div>
         ))}
+
+        <div className="catalog-more">mais em breve...</div>
       </div>
     </>
   )
