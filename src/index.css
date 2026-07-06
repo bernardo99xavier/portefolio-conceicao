@@ -13,12 +13,14 @@
 body::before {
   content: "";
   position: fixed;
-  /* height tracks the dynamic viewport so the bottom border follows the
-     mobile address bar instead of lagging behind it on scroll */
+  /* height follows the real visible area (--viewport-h, set from the
+     visualViewport API in App.jsx) so the bottom border stays pinned to the
+     bottom of the viewport as the mobile browser chrome shows/hides on scroll.
+     Falls back to 100dvh where visualViewport isn't available. */
   top: 0;
   left: 0;
   width: 100%;
-  height: 100dvh;
+  height: var(--viewport-h, 100dvh);
   pointer-events: none;
   z-index: 10;
 
