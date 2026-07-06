@@ -108,22 +108,28 @@ export default function Home() {
       },
     })
 
+    const isMobile = window.innerWidth < 768
+
     tl.fromTo(logo,
       {
         xPercent: -50, yPercent: -50,
-        x: 0, y: 0,
+        x: () => window.innerWidth / 2 + (isMobile ? 12 : 0),
+        y: () => window.innerHeight / 2,
         scale: () => (window.innerWidth * (window.innerWidth < 768 ? 0.7 : 0.4)) / logo.offsetWidth,
       },
       {
+        // fixed-pixel top-left target — no innerHeight dependency, so the
+        // docked logo doesn't drift when the mobile address bar toggles
         xPercent: 0, yPercent: 0,
-        x: () => NAV_LOGO_LEFT - window.innerWidth / 2,
-        y: () => NAV_LOGO_TOP - window.innerHeight / 2,
+        x: NAV_LOGO_LEFT,
+        y: NAV_LOGO_TOP,
         scale: 1,
         ease: "none",
       }
     )
 
-    // Cor: só muda quando o vídeo está quase fora do ecrã (85%→94% de 350vh ≈ 297→329vh)
+    // Cor: só muda quando o vídeo está quase fora do ecrã
+    // (mobile turns a bit later so it doesn't happen too soon)
     const filterTween = gsap.fromTo(logo,
       { filter: "brightness(0) invert(1)" },
       {
@@ -131,8 +137,8 @@ export default function Home() {
         ease: "none",
         scrollTrigger: {
           trigger: ".hero-scene",
-          start: "85% top",
-          end: "94% top",
+          start: isMobile ? "90% top" : "85% top",
+          end: isMobile ? "98% top" : "94% top",
           scrub: 1,
         },
       }
@@ -146,17 +152,13 @@ export default function Home() {
     }
   }, [])
 
-  // Nav links: on mobile they only appear once the beige frame shows up
-  // (S≈250vh = 71% de 350vh); on desktop they appear as soon as the logo
-  // reaches its final top-left spot, staying white until it turns black
+  // Nav links: appear as soon as the logo reaches its final top-left spot,
+  // staying white until it turns black — same timing as the logo, on any device
   useEffect(() => {
     const navLinks = document.querySelector(".nav-links")
     const isMobile = window.innerWidth < 768
 
-    const start = isMobile ? "95% top" : "top top"
-    const end = isMobile ? "101% top" : "22% top"
-
-    if (!isMobile) gsap.set(navLinks, { color: "white" })
+    gsap.set(navLinks, { color: "white" })
 
     const tween = gsap.fromTo(
       navLinks,
@@ -167,15 +169,15 @@ export default function Home() {
         ease: "none",
         scrollTrigger: {
           trigger: ".hero-scene",
-          start,
-          end,
+          start: "top top",
+          end: "22% top",
           scrub: 1,
         },
       }
     )
 
-    // Desktop only: text turns black at the same point the logo does (85%→94%)
-    const colorTween = !isMobile && gsap.fromTo(
+    // Text turns black at the same point the logo does
+    const colorTween = gsap.fromTo(
       navLinks,
       { color: "white" },
       {
@@ -183,8 +185,8 @@ export default function Home() {
         ease: "none",
         scrollTrigger: {
           trigger: ".hero-scene",
-          start: "85% top",
-          end: "94% top",
+          start: isMobile ? "90% top" : "85% top",
+          end: isMobile ? "98% top" : "94% top",
           scrub: 1,
         },
       }
@@ -286,12 +288,6 @@ export default function Home() {
 
       <div className="page-grid page-grid--home">
 
-        {wideImages.map((src, i) => (
-          <div key={i} className="image-block image-block--triple">
-            <img src={src} />
-          </div>
-        ))}
-
         <div className="story-section">
           <div className="story-section__video-wrap">
             <video autoPlay muted loop playsInline>
@@ -302,6 +298,12 @@ export default function Home() {
             <p>Conceição Fernandes cresceu numa família ligada à indústria pesqueira, mas desde cedo soube que o seu caminho seria outro. Aos 15 anos já cosia as roupas e as malas que levava para a escola e, desde então, dá continuidade a essa aptidão criando peças únicas e intemporais.</p>
           </div>
         </div>
+
+        {wideImages.map((src, i) => (
+          <div key={i} className="image-block image-block--triple">
+            <img src={src} />
+          </div>
+        ))}
 
         <div className="image-block image-block--wide">
           <img src={img1} />

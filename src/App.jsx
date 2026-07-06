@@ -49,22 +49,17 @@ function App() {
     const logo = document.querySelector(".nav-logo")
     const navLinks = document.querySelector(".nav-links")
 
-    const setNavPosition = () => {
-      gsap.set(logo, {
-        xPercent: 0,
-        yPercent: 0,
-        x: NAV_LOGO_LEFT - window.innerWidth / 2,
-        y: NAV_LOGO_TOP - window.innerHeight / 2,
-        scale: 1,
-        filter: "brightness(1) invert(0)",
-      })
-      logo.classList.add("is-active")
-      gsap.set(navLinks, { opacity: 1, y: 0 })
-    }
-
-    setNavPosition()
-    window.addEventListener("resize", setNavPosition)
-    return () => window.removeEventListener("resize", setNavPosition)
+    // top-left anchored, fixed pixels (see .nav-logo in index.css)
+    gsap.set(logo, {
+      xPercent: 0,
+      yPercent: 0,
+      x: NAV_LOGO_LEFT,
+      y: NAV_LOGO_TOP,
+      scale: 1,
+      filter: "brightness(1) invert(0)",
+    })
+    logo.classList.add("is-active")
+    gsap.set(navLinks, { opacity: 1, y: 0 })
   }, [location.pathname])
 
   return (
