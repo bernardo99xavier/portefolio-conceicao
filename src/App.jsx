@@ -32,6 +32,25 @@ function App() {
     }
   }, [])
 
+  // Track the visual viewport so the frame's bottom border stays pinned to the
+  // bottom of the *visible* area, following the mobile browser chrome smoothly
+  // (dvh alone snaps when the bottom toolbar shows/hides on scroll)
+  useEffect(() => {
+    const vv = window.visualViewport
+    if (!vv) return
+    const root = document.documentElement
+    const update = () => {
+      root.style.setProperty("--viewport-h", `${vv.height}px`)
+    }
+    update()
+    vv.addEventListener("resize", update)
+    vv.addEventListener("scroll", update)
+    return () => {
+      vv.removeEventListener("resize", update)
+      vv.removeEventListener("scroll", update)
+    }
+  }, [])
+
   // Always start at the top when the route changes
   useEffect(() => {
     window.scrollTo(0, 0)
