@@ -1,12 +1,18 @@
-import { useEffect, useRef, useMemo } from "react"
+import { useEffect, useRef } from "react"
 import { Helmet } from "react-helmet-async"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { NAV_LOGO_LEFT, NAV_LOGO_TOP } from "../App"
 import VerColecaoButton from "../components/VerColecaoButton"
-import { catalogue } from "../data/catalogue"
 
-import heroVideo from "../assets/videos/hp_v001.webm"
+import heroVideo from "../assets/videos/hp_v002.webm"
+import malasVideo from "../assets/videos/hp_v003.webm"
+import malasVideo2 from "../assets/videos/hp_v004.webm"
+import img5 from "../assets/img/homepage/hp_p005.webp"
+import img6 from "../assets/img/homepage/hp_p006.webp"
+import img7 from "../assets/img/homepage/hp_p007.webp"
+import img1 from "../assets/img/homepage/hp_p001.webp"
+import img2 from "../assets/img/homepage/hp_p002.webp"
 
 import imgNervuras from "../assets/img/collections/nervuras_thumbnail.webp"
 import imgFolhas from "../assets/img/collections/folhas_thumbnail.webp"
@@ -42,9 +48,6 @@ function useScrollReveal(ref) {
 
 export default function Home() {
   const taglineRef = useRef(null)
-  const malasRef = useRef(null)
-
-  useScrollReveal(malasRef)
 
   useEffect(() => {
     const captions = gsap.utils.toArray(".image-caption__text")
@@ -143,14 +146,17 @@ export default function Home() {
     }
   }, [])
 
-  // Nav links: só aparecem quando o frame bege fica visível em cima (S≈250vh = 71% de 350vh)
+  // Nav links: on mobile they only appear once the beige frame shows up
+  // (S≈250vh = 71% de 350vh); on desktop they appear as soon as the logo
+  // reaches its final top-left spot, staying white until it turns black
   useEffect(() => {
     const navLinks = document.querySelector(".nav-links")
-
-    // On mobile the beige page shows up later in the scroll, so reveal later
     const isMobile = window.innerWidth < 768
-    const start = isMobile ? "95% top" : "71% top"
-    const end = isMobile ? "101% top" : "77% top"
+
+    const start = isMobile ? "95% top" : "top top"
+    const end = isMobile ? "101% top" : "22% top"
+
+    if (!isMobile) gsap.set(navLinks, { color: "white" })
 
     const tween = gsap.fromTo(
       navLinks,
@@ -168,10 +174,28 @@ export default function Home() {
       }
     )
 
+    // Desktop only: text turns black at the same point the logo does (85%→94%)
+    const colorTween = !isMobile && gsap.fromTo(
+      navLinks,
+      { color: "white" },
+      {
+        color: "black",
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".hero-scene",
+          start: "85% top",
+          end: "94% top",
+          scrub: 1,
+        },
+      }
+    )
+
     return () => {
       tween.scrollTrigger?.kill()
       tween.kill()
-      gsap.set(navLinks, { opacity: 1, y: 0 })
+      colorTween?.scrollTrigger?.kill()
+      colorTween?.kill()
+      gsap.set(navLinks, { opacity: 1, y: 0, clearProps: "color" })
     }
   }, [])
 
@@ -201,23 +225,7 @@ export default function Home() {
     }
   }, [])
 
-  // 4 random catalogue thumbnails, each a different colour, re-picked per load
-  const wideImages = useMemo(() => {
-    const byColor = {}
-    for (const item of catalogue) {
-      if (!item.photos[0]) continue
-      ;(byColor[item.color] ||= []).push(item)
-    }
-    const colors = Object.keys(byColor)
-    for (let i = colors.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[colors[i], colors[j]] = [colors[j], colors[i]]
-    }
-    return colors.slice(0, 4).map(c => {
-      const items = byColor[c]
-      return items[Math.floor(Math.random() * items.length)].photos[0]
-    })
-  }, [])
+  const wideImages = [img5, img6, img7]
 
   const collectionImages = [
     { src: imgNervuras, title: "Nervuras" },
@@ -278,13 +286,41 @@ export default function Home() {
 
       <div className="page-grid page-grid--home">
 
-        <p className="homepage-topic" ref={malasRef}>MALAS</p>
-
         {wideImages.map((src, i) => (
-          <div key={i} className="image-block image-block--wide">
+          <div key={i} className="image-block image-block--triple">
             <img src={src} />
           </div>
         ))}
+
+        <div className="story-section">
+          <div className="story-section__video-wrap">
+            <video autoPlay muted loop playsInline>
+              <source src={malasVideo} type="video/webm" />
+            </video>
+          </div>
+          <div className="story-section__text">
+            <p>Conceição Fernandes cresceu numa família ligada à indústria pesqueira, mas desde cedo soube que o seu caminho seria outro. Aos 15 anos já cosia as roupas e as malas que levava para a escola e, desde então, dá continuidade a essa aptidão criando peças únicas e intemporais.</p>
+          </div>
+        </div>
+
+        <div className="image-block image-block--wide">
+          <img src={img1} />
+        </div>
+
+        <div className="image-block image-block--wide">
+          <img src={img2} />
+        </div>
+
+        <div className="story-section story-section--reverse">
+          <div className="story-section__text">
+            <p>Inspirada pela natureza e pelo ritmo profundo do universo, trabalha exclusivamente com couro reutilizado, dando uma nova vida a peles descontinuadas da indústria do calçado que, de outra forma, seriam desperdiçadas.</p>
+          </div>
+          <div className="story-section__video-wrap">
+            <video autoPlay muted loop playsInline>
+              <source src={malasVideo2} type="video/webm" />
+            </video>
+          </div>
+        </div>
 
         <div className="collections-gallery">
           <button

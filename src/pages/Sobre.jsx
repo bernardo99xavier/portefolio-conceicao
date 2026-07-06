@@ -48,9 +48,8 @@ export default function Sobre() {
 
   const sobreText = (
     <div className="sobre-text">
-      <p>Conceição Fernandes é artesã do couro como quem cultiva raízes: com paciência, com as mãos e com o tempo. Cresceu numa família ligada à indústria pesqueira, mas desde cedo soube que o seu caminho seria outro. Aos 15 anos já cosia as roupas e as malas que levava para a escola. O talento estava presente; só precisava de espaço para crescer.</p>
-      <p>Hoje, cada peça que cria é única e intemporal. Inspirada pela natureza e pelo ritmo profundo do universo, trabalha exclusivamente com couro reutilizado, dando uma nova vida a peles descontinuadas da indústria do calçado que, de outra forma, seriam desperdiçadas. Este processo reflete os princípios da economia circular, mas representa também um gesto de beleza, mostrando que aquilo que parece perdido pode voltar a florescer.</p>
-      <p>Há quase 30 anos que leva este trabalho às feiras medievais, onde as suas peças encontram quem as reconhece pelo que verdadeiramente são: feitas à mão, feitas para durar e feitas com alma.</p>
+      <p>Conceição Fernandes é uma artesã que trabalha peles naturais como quem cultiva raízes: com paciência, com as mãos e com o tempo. Cresceu numa família ligada à indústria pesqueira, mas desde cedo soube que o seu caminho seria outro. Aos 15 anos já cosia as roupas e as malas que levava para a escola e, desde então, dá continuidade a essa aptidão criando peças únicas e intemporais no contexto do artesanato. Inspirada pela natureza e pelo ritmo profundo do universo, trabalha exclusivamente com couro reutilizado, dando uma nova vida a peles descontinuadas da indústria do calçado que, de outra forma, seriam desperdiçadas. O seu processo aspira a princípios da economia circular, mas representa também um gesto de beleza, mostrando que aquilo que parece perdido pode voltar a florescer.</p>
+      <p>Há quase 30 anos que leva este trabalho a feiras de arte e artesanato, onde as suas peças encontram quem as reconhece pelo que verdadeiramente são: feitas à mão, feitas para durar e feitas com consciência e autenticidade.</p>
     </div>
   )
 
