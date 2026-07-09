@@ -40,7 +40,13 @@ function App() {
     if (!vv) return
     const root = document.documentElement
     const update = () => {
-      root.style.setProperty("--viewport-h", `${vv.height}px`)
+      // While pinch-zoomed (desktop), visualViewport.height shrinks and would
+      // drag the frame's bottom border upward — fall back to 100dvh instead.
+      if (vv.scale !== 1) {
+        root.style.removeProperty("--viewport-h")
+      } else {
+        root.style.setProperty("--viewport-h", `${vv.height}px`)
+      }
     }
     update()
     vv.addEventListener("resize", update)
