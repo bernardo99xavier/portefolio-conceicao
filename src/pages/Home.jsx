@@ -1,18 +1,15 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Helmet } from "react-helmet-async"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { NAV_LOGO_LEFT, NAV_LOGO_TOP } from "../App"
 import VerColecaoButton from "../components/VerColecaoButton"
+import { useTransition } from "../context/TransitionContext"
+import { catalogue } from "../data/catalogue"
 
 import heroVideo from "../assets/videos/hp_v002.webm"
 import malasVideo from "../assets/videos/hp_v003.webm"
 import malasVideo2 from "../assets/videos/hp_v004.webm"
-import img5 from "../assets/img/homepage/hp_p005.webp"
-import img6 from "../assets/img/homepage/hp_p006.webp"
-import img7 from "../assets/img/homepage/hp_p007.webp"
-import img1 from "../assets/img/homepage/hp_p001.webp"
-import img2 from "../assets/img/homepage/hp_p002.webp"
 
 import imgNervuras from "../assets/img/collections/nervuras_thumbnail.webp"
 import imgFolhas from "../assets/img/collections/folhas_thumbnail.webp"
@@ -20,6 +17,11 @@ import imgPrimaveras from "../assets/img/collections/primaveras_thumbnail.webp"
 import imgChavetas from "../assets/img/collections/chavetas_thumbnail.webp"
 import imgPregas from "../assets/img/collections/pregas_thumbnail.webp"
 import imgPastas from "../assets/img/collections/pastas_thumbnail.webp"
+
+// Ornament photos (hp_o*) for the swapping slideshow
+const ornamentImages = Object.values(
+  import.meta.glob("../assets/img/homepage/hp_o*.webp", { eager: true, import: "default" })
+)
 
 
 gsap.registerPlugin(ScrollTrigger)
@@ -47,6 +49,7 @@ function useScrollReveal(ref) {
 }
 
 export default function Home() {
+  const { transitionTo } = useTransition()
   const taglineRef = useRef(null)
 
   useEffect(() => {
@@ -227,7 +230,39 @@ export default function Home() {
     }
   }, [])
 
-  const wideImages = [img5, img6, img7]
+  // Mala strip: first photo (+ id) of every bag from the catalogue
+  const malaItems = catalogue
+    .filter(item => item.code.startsWith("M") && item.photos[0])
+    .map(item => ({ id: item.id, src: item.photos[0] }))
+  const malaPool = [...malaItems, ...malaItems]
+  const malaTrackRef = useRef(null)
+
+  const moveMalas = (dir) => {
+    const track = malaTrackRef.current
+    if (!track || gsap.isTweening(track)) return
+    const gap = parseFloat(getComputedStyle(track).columnGap) || 0
+    const step = track.children[0].offsetWidth + gap
+    const loop = step * malaItems.length
+    gsap.to(track, {
+      x: `-=${dir * step * 3}`,
+      duration: 1,
+      ease: "power2.inOut",
+      modifiers: {
+        x: gsap.utils.unitize(gsap.utils.wrap(-loop, 0)),
+      },
+    })
+  }
+
+  // Ornaments: two slots that swap to new hp_o photos every second (instant, no animation)
+  const [ornamentIndex, setOrnamentIndex] = useState(0)
+
+  useEffect(() => {
+    ornamentImages.forEach(src => { const im = new Image(); im.src = src }) // preload for instant swap
+    const id = setInterval(() => {
+      setOrnamentIndex(i => (i + 2) % ornamentImages.length)
+    }, 1000)
+    return () => clearInterval(id)
+  }, [])
 
   const collectionImages = [
     { src: imgNervuras, title: "Nervuras" },
@@ -258,10 +293,11 @@ export default function Home() {
     })
   }
 
-  // keep the strip aligned to the grid after a resize
+  // keep the strips aligned to the grid after a resize
   useEffect(() => {
     const onResize = () => {
       if (galleryTrackRef.current) gsap.set(galleryTrackRef.current, { x: 0 })
+      if (malaTrackRef.current) gsap.set(malaTrackRef.current, { x: 0 })
     }
     window.addEventListener("resize", onResize)
     return () => window.removeEventListener("resize", onResize)
@@ -299,18 +335,46 @@ export default function Home() {
           </div>
         </div>
 
-        {wideImages.map((src, i) => (
-          <div key={i} className="image-block image-block--triple">
-            <img src={src} />
-          </div>
-        ))}
+        <div className="mala-gallery">
+          <button
+            className="gallery-arrow gallery-arrow--left"
+            onClick={() => moveMalas(-1)}
+            aria-label="Ver malas anteriores"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M9 2 L4 7 L9 12" />
+            </svg>
+          </button>
 
-        <div className="image-block image-block--wide">
-          <img src={img1} />
+          <div className="mala-gallery__track" ref={malaTrackRef}>
+            {malaPool.map((item, i) => (
+              <div
+                key={i}
+                className="mala-gallery__item"
+                onClick={() => transitionTo(`/catalogo/${item.id}`)}
+              >
+                <img src={item.src} alt={item.id} />
+              </div>
+            ))}
+          </div>
+
+          <button
+            className="gallery-arrow gallery-arrow--right"
+            onClick={() => moveMalas(1)}
+            aria-label="Ver mais malas"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M5 2 L10 7 L5 12" />
+            </svg>
+          </button>
         </div>
 
         <div className="image-block image-block--wide">
-          <img src={img2} />
+          <img src={ornamentImages[ornamentIndex % ornamentImages.length]} alt="" />
+        </div>
+
+        <div className="image-block image-block--wide">
+          <img src={ornamentImages[(ornamentIndex + 1) % ornamentImages.length]} alt="" />
         </div>
 
         <div className="story-section story-section--reverse">
