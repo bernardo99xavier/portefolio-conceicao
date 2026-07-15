@@ -218,6 +218,36 @@ h1 {
   opacity: 0;
 }
 
+/* Homepage scroll hint: blinking arrow at the bottom, fades out after first scroll.
+   Outer element owns the fade; inner icon owns the blink, so the two opacities
+   compound and the hint can fade smoothly mid-blink. */
+.scroll-hint {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  color: white;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.7s ease;
+}
+
+.scroll-hint--hidden {
+  opacity: 0;
+}
+
+.scroll-hint__icon {
+  display: block;
+  animation: scroll-hint-blink 2s ease-in-out infinite;
+}
+
+@keyframes scroll-hint-blink {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.9; }
+}
+
 .grid-overlay {
   position: fixed;
   top: 0;
@@ -664,23 +694,20 @@ h1 {
   }
 
   /* Homepage — every image spans all columns (one per row) */
-  .image-block--wide,
   .image-block--triple,
   .image-block-wrap,
   .image-block-wrap--narrow {
     grid-column: 1 / -1;
   }
 
-  /* Catalogue item page: one photo per row, full width on mobile */
-  .page-grid--item {
-    grid-template-columns: repeat(var(--grid-columns), 1fr);
+  /* Ornament pair: side by side, each half the grid */
+  .page-grid--home > .image-block--wide {
+    grid-column: span 6;
   }
 
-  .page-grid--item .item-photo,
-  .page-grid--item .item-photo:nth-child(3n + 1),
-  .page-grid--item .item-photo:nth-child(3n + 2),
-  .page-grid--item .item-photo:nth-child(3n) {
-    grid-column: 1 / -1;
+  /* Malas gallery: one photo per view on mobile */
+  .mala-gallery__track {
+    grid-auto-columns: 100%;
   }
 
   /* Story section: no video on mobile, text only, generous vertical breathing room */
@@ -696,6 +723,10 @@ h1 {
   .story-section__text {
     padding: 24px 10px;
     text-align: center;
+  }
+
+  .story-section__text p {
+    margin: 0 8px;
   }
 
   .homepage-topic {
@@ -1021,6 +1052,19 @@ h1 {
 /* ── SOBRE — MOBILE ── */
 /* Placed after base rules so the mobile layout wins the cascade */
 @media (max-width: 767px) {
+  /* Catalogue item page: every photo full width, stacked one below another.
+     Placed after the desktop .page-grid--item rules so source order wins. */
+  .page-grid--item {
+    grid-template-columns: 1fr;
+  }
+
+  .page-grid--item .item-photo,
+  .page-grid--item .item-photo:nth-child(3n + 1),
+  .page-grid--item .item-photo:nth-child(3n + 2),
+  .page-grid--item .item-photo:nth-child(3n) {
+    grid-column: 1 / -1;
+  }
+
   /* Gallery stays pinned below the navbar while the text scrolls */
   .sobre-gallery {
     grid-column: 1 / -1;
