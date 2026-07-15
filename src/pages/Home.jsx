@@ -243,8 +243,10 @@ export default function Home() {
     const gap = parseFloat(getComputedStyle(track).columnGap) || 0
     const step = track.children[0].offsetWidth + gap
     const loop = step * malaItems.length
+    // advance by however many photos are visible (3 on desktop, 1 on mobile)
+    const visible = Math.max(1, Math.round(track.parentElement.offsetWidth / step))
     gsap.to(track, {
-      x: `-=${dir * step * 3}`,
+      x: `-=${dir * step * visible}`,
       duration: 1,
       ease: "power2.inOut",
       modifiers: {
@@ -252,6 +254,20 @@ export default function Home() {
       },
     })
   }
+
+  // Scroll hint: a blinking arrow shown on load, gone for good after the first scroll
+  const [showScrollHint, setShowScrollHint] = useState(true)
+
+  useEffect(() => {
+    const onScroll = () => {
+      if (window.scrollY > 10) {
+        setShowScrollHint(false)
+        window.removeEventListener("scroll", onScroll)
+      }
+    }
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
 
   // Ornaments: two slots that swap to new hp_o photos every second (instant, no animation)
   const [ornamentIndex, setOrnamentIndex] = useState(0)
@@ -320,6 +336,16 @@ export default function Home() {
           </video>
           <p className="hero-tagline" ref={taglineRef}>Peças inspiradas pela natureza</p>
         </div>
+      </div>
+
+      <div
+        className={`scroll-hint${showScrollHint ? "" : " scroll-hint--hidden"}`}
+        aria-hidden="true"
+      >
+        <svg className="scroll-hint__icon" width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
+          <circle cx="12" cy="12" r="8.5" />
+          <path d="M7.5 10.5 L12 15 L16.5 10.5" strokeWidth="1.5" />
+        </svg>
       </div>
 
       <div className="page-grid page-grid--home">
