@@ -5,11 +5,19 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { NAV_LOGO_LEFT, NAV_LOGO_TOP } from "../App"
 import VerColecaoButton from "../components/VerColecaoButton"
 import { useTransition } from "../context/TransitionContext"
+import { useLang } from "../context/LangContext"
 import { catalogue } from "../data/catalogue"
 
 import heroVideo from "../assets/videos/hp_v002.webm"
+import heroVideoMobile from "../assets/videos/hp_v002.mobile.webm"
 import malasVideo from "../assets/videos/hp_v003.webm"
 import malasVideo2 from "../assets/videos/hp_v004.webm"
+
+// First frame of each video — shows instantly while the video loads, and is all
+// the story sections fetch until scrolled into view (they use preload="none")
+import heroPoster from "../assets/img/posters/hero.webp"
+import story1Poster from "../assets/img/posters/story1.webp"
+import story2Poster from "../assets/img/posters/story2.webp"
 
 import imgNervuras from "../assets/img/collections/nervuras_thumbnail.webp"
 import imgFolhas from "../assets/img/collections/folhas_thumbnail.webp"
@@ -50,7 +58,14 @@ function useScrollReveal(ref) {
 
 export default function Home() {
   const { transitionTo } = useTransition()
+  const { lang, t } = useLang()
   const taglineRef = useRef(null)
+
+  // Phones get a lighter hero encode (1.7MB vs 5MB). Resolved once on mount so
+  // the browser only ever fetches one of the two.
+  const [heroSrc] = useState(() =>
+    typeof window !== "undefined" && window.innerWidth < 768 ? heroVideoMobile : heroVideo
+  )
 
   useEffect(() => {
     const captions = gsap.utils.toArray(".image-caption__text")
@@ -232,8 +247,8 @@ export default function Home() {
 
   // Mala strip: first photo (+ id) of every bag from the catalogue
   const malaItems = catalogue
-    .filter(item => item.code.startsWith("M") && item.photos[0])
-    .map(item => ({ id: item.id, src: item.photos[0] }))
+    .filter(item => item.code.startsWith("M") && item.thumbs[0])
+    .map(item => ({ id: item.id, src: item.thumbs[0] }))
   const malaPool = [...malaItems, ...malaItems]
   const malaTrackRef = useRef(null)
 
@@ -281,12 +296,12 @@ export default function Home() {
   }, [])
 
   const collectionImages = [
-    { src: imgNervuras, title: "Nervuras" },
-    { src: imgFolhas, title: "Folhas" },
-    { src: imgPrimaveras, title: "Primaveras" },
-    { src: imgChavetas, title: "Chavetas" },
-    { src: imgPregas, title: "Pregas" },
-    { src: imgPastas, title: "Pastas" },
+    { src: imgNervuras, title: t("colecoes.nervuras.title") },
+    { src: imgFolhas, title: t("colecoes.folhas.title") },
+    { src: imgPrimaveras, title: t("colecoes.primaveras.title") },
+    { src: imgChavetas, title: t("colecoes.chavetas.title") },
+    { src: imgPregas, title: t("colecoes.pregas.title") },
+    { src: imgPastas, title: t("colecoes.pastas.title") },
   ]
 
   // Gallery — duplicated pool so the strip can slide and loop seamlessly
@@ -322,19 +337,20 @@ export default function Home() {
   return (
     <>
       <Helmet>
-        <title>Conceição</title>
-        <meta name="description" content="Prática artística visual de Conceição." />
-        <meta property="og:title" content="Conceição" />
-        <meta property="og:description" content="Prática artística visual de Conceição." />
+        <html lang={lang} />
+        <title>{t("home.meta.title")}</title>
+        <meta name="description" content={t("home.meta.desc")} />
+        <meta property="og:title" content={t("home.meta.title")} />
+        <meta property="og:description" content={t("home.meta.desc")} />
         <meta property="og:type" content="website" />
       </Helmet>
 
       <div className="hero-scene">
         <div className="hero-sticky">
-          <video className="hero-video" autoPlay muted loop playsInline>
-            <source src={heroVideo} type="video/webm" />
+          <video className="hero-video" autoPlay muted loop playsInline poster={heroPoster}>
+            <source src={heroSrc} type="video/webm" />
           </video>
-          <p className="hero-tagline" ref={taglineRef}>Peças inspiradas pela natureza</p>
+          <p className="hero-tagline" ref={taglineRef}>{t("home.tagline")}</p>
         </div>
       </div>
 
@@ -352,12 +368,12 @@ export default function Home() {
 
         <div className="story-section">
           <div className="story-section__video-wrap">
-            <video autoPlay muted loop playsInline>
+            <video autoPlay muted loop playsInline preload="none" poster={story1Poster}>
               <source src={malasVideo} type="video/webm" />
             </video>
           </div>
           <div className="story-section__text">
-            <p>Conceição Fernandes cresceu numa família ligada à indústria pesqueira, mas desde cedo soube que o seu caminho seria outro. Aos 15 anos já cosia as roupas e as malas que levava para a escola e, desde então, dá continuidade a essa aptidão criando peças únicas e intemporais.</p>
+            <p>{t("home.story1")}</p>
           </div>
         </div>
 
@@ -365,7 +381,7 @@ export default function Home() {
           <button
             className="gallery-arrow gallery-arrow--left"
             onClick={() => moveMalas(-1)}
-            aria-label="Ver malas anteriores"
+            aria-label={t("home.arrowPrevMalas")}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M9 2 L4 7 L9 12" />
@@ -379,7 +395,7 @@ export default function Home() {
                 className="mala-gallery__item"
                 onClick={() => transitionTo(`/catalogo/${item.id}`)}
               >
-                <img src={item.src} alt={item.id} />
+                <img src={item.src} alt={item.id} loading="lazy" decoding="async" />
               </div>
             ))}
           </div>
@@ -387,7 +403,7 @@ export default function Home() {
           <button
             className="gallery-arrow gallery-arrow--right"
             onClick={() => moveMalas(1)}
-            aria-label="Ver mais malas"
+            aria-label={t("home.arrowNextMalas")}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M5 2 L10 7 L5 12" />
@@ -405,10 +421,10 @@ export default function Home() {
 
         <div className="story-section story-section--reverse">
           <div className="story-section__text">
-            <p>Inspirada pela natureza e pelo ritmo profundo do universo, trabalha exclusivamente com couro reutilizado, dando uma nova vida a peles descontinuadas da indústria do calçado que, de outra forma, seriam desperdiçadas.</p>
+            <p>{t("home.story2")}</p>
           </div>
           <div className="story-section__video-wrap">
-            <video autoPlay muted loop playsInline>
+            <video autoPlay muted loop playsInline preload="none" poster={story2Poster}>
               <source src={malasVideo2} type="video/webm" />
             </video>
           </div>
@@ -418,7 +434,7 @@ export default function Home() {
           <button
             className="gallery-arrow gallery-arrow--left"
             onClick={() => moveGallery(-1)}
-            aria-label="Ver coleções anteriores"
+            aria-label={t("home.arrowPrevColecoes")}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M9 2 L4 7 L9 12" />
@@ -428,7 +444,7 @@ export default function Home() {
           <div className="collections-gallery__track" ref={galleryTrackRef}>
             {galleryPool.map(({ src, title }, i) => (
               <div key={`slot-${i}`} className="image-block image-block--collection">
-                <img src={src} />
+                <img src={src} loading="lazy" decoding="async" />
                 <div className="image-caption">
                   <div className="image-caption__text">
                     <span className="image-caption__title">{title}</span>
@@ -442,7 +458,7 @@ export default function Home() {
           <button
             className="gallery-arrow gallery-arrow--right"
             onClick={() => moveGallery(1)}
-            aria-label="Ver coleções seguintes"
+            aria-label={t("home.arrowNextColecoes")}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M5 2 L10 7 L5 12" />

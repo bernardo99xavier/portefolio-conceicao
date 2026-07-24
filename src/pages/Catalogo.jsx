@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async"
 import gsap from "gsap"
 import { Flip } from "gsap/Flip"
 import { useTransition } from "../context/TransitionContext"
+import { useLang } from "../context/LangContext"
 import { catalogue } from "../data/catalogue"
 
 gsap.registerPlugin(Flip)
@@ -11,19 +12,25 @@ gsap.registerPlugin(Flip)
 export default function Catalogo() {
   const { activeColor, gridView, flipCaptureRef } = useOutletContext()
   const { transitionTo } = useTransition()
+  const { lang, t } = useLang()
   const gridRef = useRef(null)
   const flipStateRef = useRef(null)
 
-  useEffect(() => {
-    catalogue.forEach(item => {
-      item.photos.forEach(src => {
-        if (src) {
-          const img = new Image()
-          img.src = src
-        }
-      })
+  // The grid only shows each item's first two photos; the rest belong to the
+  // item page. Warm those on hover/touch so opening a piece still feels
+  // instant, without the catalogue downloading the whole catalogue up front.
+  const prefetched = useRef(new Set())
+
+  const prefetchItem = (item) => {
+    if (prefetched.current.has(item.id)) return
+    prefetched.current.add(item.id)
+    item.photos.slice(2).forEach(src => {
+      if (src) {
+        const img = new Image()
+        img.src = src
+      }
     })
-  }, [])
+  }
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -74,9 +81,10 @@ export default function Catalogo() {
   return (
     <>
       <Helmet>
-        <title>Catálogo — Conceição</title>
-        <meta name="description" content="Explorar o catálogo de Conceição — malas, colares e acessórios artesanais." />
-        <meta property="og:title" content="Catálogo — Conceição" />
+        <html lang={lang} />
+        <title>{t("catalogo.meta.title")}</title>
+        <meta name="description" content={t("catalogo.meta.desc")} />
+        <meta property="og:title" content={t("catalogo.meta.title")} />
         <meta property="og:type" content="website" />
       </Helmet>
 
@@ -86,15 +94,28 @@ export default function Catalogo() {
             key={item.id}
             className="catalog-item"
             onClick={() => transitionTo(`/catalogo/${item.id}`)}
+            onPointerEnter={() => prefetchItem(item)}
           >
-            <img className="main-img" src={item.photos[0]} alt={item.id} />
-            {item.photos[1] && (
-              <img className="hover-img" src={item.photos[1]} alt={item.id} />
+            <img
+              className="main-img"
+              src={item.thumbs[0]}
+              alt={item.id}
+              loading="lazy"
+              decoding="async"
+            />
+            {item.thumbs[1] && (
+              <img
+                className="hover-img"
+                src={item.thumbs[1]}
+                alt={item.id}
+                loading="lazy"
+                decoding="async"
+              />
             )}
           </div>
         ))}
 
-        <div className="catalog-more">mais em breve...</div>
+        <div className="catalog-more">{t("catalogo.maisEmBreve")}</div>
       </div>
     </>
   )

@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react"
+import { useLang } from "../context/LangContext"
 
 export default function VerColecaoButton({ className = "" }) {
+  const { t } = useLang()
   const [soon, setSoon] = useState(false)
   const timer = useRef(null)
 
@@ -19,7 +21,7 @@ export default function VerColecaoButton({ className = "" }) {
       className={`image-caption__cta${className ? " " + className : ""}`}
       onClick={handleClick}
     >
-      {soon ? "Em breve" : "Ver coleção"}
+      {soon ? t("cta.emBreve") : t("cta.verColecao")}
     </span>
   )
 }

@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom"
 import gsap from "gsap"
 import logo from "../assets/logo_cf.svg"
 import { useTransition } from "../context/TransitionContext"
+import { useLang } from "../context/LangContext"
 import { COLORS } from "../data/colors"
 
 function GridIcon({ cols }) {
@@ -27,8 +28,9 @@ function GridIcon({ cols }) {
   )
 }
 
-function Navbar({ lang, setLang, activeColor, setActiveColor, gridView, changeView }) {
+function Navbar({ activeColor, setActiveColor, gridView, changeView }) {
   const { transitionTo } = useTransition()
+  const { lang, setLang, t } = useLang()
   const location = useLocation()
   const [filterOpen, setFilterOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(() =>
@@ -160,7 +162,7 @@ function Navbar({ lang, setLang, activeColor, setActiveColor, gridView, changeVi
               className="nav-filter-btn"
               onClick={() => filterOpen ? closeFilter() : openFilter()}
             >
-              FILTROS
+              {t("nav.filtros")}
             </button>
 
             {filterOpen && (
@@ -177,23 +179,33 @@ function Navbar({ lang, setLang, activeColor, setActiveColor, gridView, changeVi
           <ul className="nav-links">
             <li>
               <a href="/catalogo" onClick={(e) => { e.preventDefault(); handleNavigate("/catalogo") }}>
-                CATÁLOGO
+                {t("nav.catalogo")}
               </a>
             </li>
             <li>
               <a href="/colecoes" onClick={(e) => { e.preventDefault(); handleNavigate("/colecoes") }}>
-                COLEÇÕES
+                {t("nav.colecoes")}
               </a>
             </li>
             <li>
               <a href="/sobre" onClick={(e) => { e.preventDefault(); handleNavigate("/sobre") }}>
-                SOBRE
+                {t("nav.sobre")}
               </a>
             </li>
             <li className="lang-switch">
-              <span onClick={() => setLang("en")}>EN</span>
-              <span> | </span>
-              <span onClick={() => setLang("pt")}>PT</span>
+              <span
+                className={lang === "en" ? "is-active" : ""}
+                onClick={() => setLang("en")}
+              >
+                EN
+              </span>
+              <span className="lang-switch__sep"> | </span>
+              <span
+                className={lang === "pt" ? "is-active" : ""}
+                onClick={() => setLang("pt")}
+              >
+                PT
+              </span>
             </li>
           </ul>
         </div>
@@ -216,7 +228,7 @@ function Navbar({ lang, setLang, activeColor, setActiveColor, gridView, changeVi
             className="nav-filter-btn"
             onClick={() => filterOpen ? closeFilter() : openFilter()}
           >
-            FILTROS
+            {t("nav.filtros")}
           </button>
         </div>
       )}
