@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import VerColecaoButton from "../components/VerColecaoButton"
+import { useLang } from "../context/LangContext"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -13,41 +14,19 @@ import imgChavetas from "../assets/img/collections/chavetas_thumbnail.webp"
 import imgPregas from "../assets/img/collections/pregas_thumbnail.webp"
 import imgPastas from "../assets/img/collections/pastas_thumbnail.webp"
 
+// `id` is the stable React key and the translation-key stem, so switching
+// language re-renders the text without remounting the elements.
 const collections = [
-  {
-    src: imgNervuras,
-    title: "Nervuras",
-    description: "Inspirada nas nervuras das folhas, explora linhas que se ramificam com delicadeza pela natureza.",
-  },
-  {
-    src: imgFolhas,
-    title: "Folhas",
-    description: "Formas orgânicas colhidas do mundo vegetal, traduzidas em peças que celebram a simplicidade da natureza.",
-  },
-  {
-    src: imgPrimaveras,
-    title: "Primaveras",
-    description: "A alegria e a leveza das flores silvestres ganham forma numa coleção luminosa e cheia de movimento.",
-    objectPosition: "center 100%",
-  },
-  {
-    src: imgChavetas,
-    title: "Chavetas",
-    description: "Geometrias que abrem portas — uma coleção que brinca com símbolos de acesso, mistério e descoberta.",
-  },
-  {
-    src: imgPregas,
-    title: "Pregas",
-    description: "Em dobras sucessivas, o tecido encontra a sua forma — vincos onde a luz desliza e repousa em silêncio.",
-  },
-  {
-    src: imgPastas,
-    title: "Pastas",
-    description: "De ângulos firmes e linhas assumidas, guardam o porte sóbrio do ofício — uma geometria que se carrega.",
-  },
+  { id: "nervuras", src: imgNervuras },
+  { id: "folhas", src: imgFolhas },
+  { id: "primaveras", src: imgPrimaveras, objectPosition: "center 100%" },
+  { id: "chavetas", src: imgChavetas },
+  { id: "pregas", src: imgPregas },
+  { id: "pastas", src: imgPastas },
 ]
 
 export default function Colecoes() {
+  const { lang, t } = useLang()
   const gridRef = useRef(null)
 
   useEffect(() => {
@@ -97,21 +76,28 @@ export default function Colecoes() {
   return (
     <>
       <Helmet>
-        <title>Coleções — Conceição</title>
-        <meta name="description" content="Coleções de Conceição — peças artesanais inspiradas pela natureza." />
-        <meta property="og:title" content="Coleções — Conceição" />
+        <html lang={lang} />
+        <title>{t("colecoes.meta.title")}</title>
+        <meta name="description" content={t("colecoes.meta.desc")} />
+        <meta property="og:title" content={t("colecoes.meta.title")} />
         <meta property="og:type" content="website" />
       </Helmet>
 
       <div className="page-grid page-grid--colecoes" ref={gridRef}>
-        {collections.map(({ src, title, description, objectPosition }) => (
-          <div key={title} className="collection-group">
+        {collections.map(({ id, src, objectPosition }) => (
+          <div key={id} className="collection-group">
             <div className="collection-group__image-wrap">
-              <img src={src} alt={title} style={objectPosition ? { objectPosition } : undefined} />
+              <img
+                src={src}
+                alt={t(`colecoes.${id}.title`)}
+                style={objectPosition ? { objectPosition } : undefined}
+                loading="lazy"
+                decoding="async"
+              />
             </div>
             <div className="collection-group__text">
-              <h2 className="collection-group__title">{title}</h2>
-              <p className="collection-group__desc" lang="pt">{description}</p>
+              <h2 className="collection-group__title">{t(`colecoes.${id}.title`)}</h2>
+              <p className="collection-group__desc" lang={lang}>{t(`colecoes.${id}.desc`)}</p>
               <VerColecaoButton className="collection-group__cta" />
             </div>
           </div>

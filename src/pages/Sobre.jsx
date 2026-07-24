@@ -1,13 +1,15 @@
 import { Helmet } from "react-helmet-async"
 import { useState, useEffect, useRef } from "react"
-import about1 from "../assets/img/about/about_1.webp"
-import about2 from "../assets/img/about/about_2.webp"
-import about3 from "../assets/img/about/about_3.webp"
-import about4 from "../assets/img/about/about_4.webp"
-
-const photos = [about1, about2, about3, about4]
+import { useLang } from "../context/LangContext"
+// Picked up automatically, so adding/removing an about_*.webp never breaks the build
+const photos = Object.entries(
+  import.meta.glob("../assets/img/about/about_*.webp", { eager: true, import: "default" })
+)
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([, src]) => src)
 
 export default function Sobre() {
+  const { lang, t } = useLang()
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" && window.innerWidth < 768
   )
@@ -47,19 +49,22 @@ export default function Sobre() {
   }
 
   const sobreText = (
-    <div className="sobre-text">
-      <p>Conceição Fernandes é uma artesã que trabalha peles naturais como quem cultiva raízes: com paciência, com as mãos e com o tempo. Cresceu numa família ligada à indústria pesqueira, mas aos 15 anos já cosia as roupas e malas que levava para a escola. Desde então, dá continuidade a essa aptidão criando peças únicas e intemporais no contexto do artesanato. Inspirada na natureza e no ritmo profundo do universo, trabalha exclusivamente com couro reutilizado, dando uma nova vida a peles descontinuadas da indústria do calçado que, de outra forma, seriam desperdiçadas.</p>
-      <p>O seu processo aspira a princípios da economia circular, mas representa também um gesto de beleza, mostrando que o que parece perdido pode voltar a florescer. O seu percurso em artesanato teve início em 1998, mas as suas malas de couro ganharam destaque em feiras a partir de 2003, no concelho de Vouzela, onde então residia. Desde aí, tem consolidado uma presença regular em feiras dos distritos de Viseu e Aveiro, expandindo progressivamente a sua atividade a eventos nacionais e internacionais, nomeadamente em Porto Santo (Madeira), São Miguel (Açores) e Berlim (Alemanha). Foi premiada três vezes pela Associação de Artesãos das Terras de Santa Maria. Destaca-se ainda a sua presença há 28 anos consecutivos na Viagem Medieval em Terra de Santa Maria (St. Maria da Feira), a sua participação na edição mais recente do Imaginarius, na mesma cidade, e nos últimos quatro anos, na FIA – Feira Internacional do Artesanato de Lisboa.</p>
-      <p>Há quase 30 anos que leva o seu trabalho a feiras de arte e artesanato, onde as suas peças encontram quem as reconhece pelo que verdadeiramente são: feitas à mão, feitas para durar e feitas com consciência e autenticidade.</p>
+    // --sobre-rows keeps the text's row span equal to the photo count, so the
+    // grid gains no empty trailing row (which would leave a gap at the bottom)
+    <div className="sobre-text" style={{ "--sobre-rows": photos.length }}>
+      {t("sobre.paragraphs").map((paragraph, i) => (
+        <p key={i}>{paragraph}</p>
+      ))}
     </div>
   )
 
   return (
     <>
       <Helmet>
-        <title>Sobre — Conceição</title>
-        <meta name="description" content="Sobre Conceição Fernandes — artesã do couro, com peças únicas em couro reutilizado." />
-        <meta property="og:title" content="Sobre — Conceição" />
+        <html lang={lang} />
+        <title>{t("sobre.meta.title")}</title>
+        <meta name="description" content={t("sobre.meta.desc")} />
+        <meta property="og:title" content={t("sobre.meta.title")} />
         <meta property="og:type" content="website" />
       </Helmet>
 
@@ -95,7 +100,7 @@ export default function Sobre() {
           <>
             {photos.map((photo, i) => (
               <div key={i} className="item-photo">
-                <img src={photo} alt={`Conceição — foto ${i + 1}`} />
+                <img src={photo} alt={`Conceição — foto ${i + 1}`} loading={i === 0 ? "eager" : "lazy"} decoding="async" />
               </div>
             ))}
             {sobreText}

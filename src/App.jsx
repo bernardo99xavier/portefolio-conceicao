@@ -5,13 +5,13 @@ import gsap from "gsap"
 
 import { TransitionProvider } from "./context/TransitionContext"
 import { AudioProvider } from "./context/AudioContext"
+import { LangProvider } from "./context/LangContext"
 import Navbar from "./components/Navbar"
 
 export const NAV_LOGO_LEFT = 15
 export const NAV_LOGO_TOP = 10
 
 function App() {
-  const [lang, setLang] = useState("pt")
   const [activeColor, setActiveColor] = useState(null)
   const [gridView, setGridView] = useState(() =>
     typeof window !== "undefined" && window.innerWidth < 768 ? 1 : 3
@@ -90,14 +90,15 @@ function App() {
   return (
     <HelmetProvider>
       <AudioProvider>
-        <TransitionProvider>
-          <Navbar
-            lang={lang} setLang={setLang}
-            activeColor={activeColor} setActiveColor={setActiveColor}
-            gridView={gridView} changeView={changeView}
-          />
-          <Outlet context={{ lang, activeColor, gridView, flipCaptureRef }} />
-        </TransitionProvider>
+        <LangProvider>
+          <TransitionProvider>
+            <Navbar
+              activeColor={activeColor} setActiveColor={setActiveColor}
+              gridView={gridView} changeView={changeView}
+            />
+            <Outlet context={{ activeColor, gridView, flipCaptureRef }} />
+          </TransitionProvider>
+        </LangProvider>
       </AudioProvider>
     </HelmetProvider>
   )
