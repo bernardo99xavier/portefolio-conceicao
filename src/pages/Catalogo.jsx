@@ -109,7 +109,8 @@ export default function Catalogo() {
                 src={item.thumbs[1]}
                 alt={item.id}
                 loading="lazy"
-                decoding="async"
+                /* no async decode: the hover swap reveals it instantly, and an
+                   undecoded bitmap paints white for a frame (see ornaments) */
               />
             )}
           </div>
