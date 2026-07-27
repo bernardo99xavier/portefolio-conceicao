@@ -693,6 +693,14 @@ h1 {
 }
 
 @media (max-width: 767px) {
+  /* Drop the bottom beige frame on phones: pinning it to the visualViewport
+     made it jump as the browser chrome showed/hid. Top and side frames stay,
+     and the height no longer depends on --viewport-h. */
+  body::before {
+    height: 100dvh;
+    border-bottom: 0;
+  }
+
   /* The clamp() values in the base rules exist for the tablet range; on phones
      they would bottom out at their minimum, so pin these back to the sizes the
      mobile layout was designed with. */
@@ -759,7 +767,7 @@ h1 {
   }
 
   .story-section__text p {
-    font-size: 22px;
+    font-size: 20px;
     margin: 0 8px;
   }
 

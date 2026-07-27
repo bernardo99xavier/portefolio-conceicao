@@ -60,12 +60,31 @@ export default function Home() {
   const { transitionTo } = useTransition()
   const { lang, t } = useLang()
   const taglineRef = useRef(null)
+  const heroVideoRef = useRef(null)
 
-  // Phones get a lighter hero encode (1.7MB vs 5MB). Resolved once on mount so
-  // the browser only ever fetches one of the two.
-  const [heroSrc] = useState(() =>
-    typeof window !== "undefined" && window.innerWidth < 768 ? heroVideoMobile : heroVideo
-  )
+  // The hero shows only its poster at first; the video (1.7MB on phones, 5MB on
+  // desktop) is fetched once the browser is idle, so it never competes with the
+  // initial render. Phones get the lighter encode.
+  const [heroSrc, setHeroSrc] = useState(null)
+
+  useEffect(() => {
+    const src = window.innerWidth < 768 ? heroVideoMobile : heroVideo
+    const start = () => setHeroSrc(src)
+    if (window.requestIdleCallback) {
+      const id = window.requestIdleCallback(start, { timeout: 2500 })
+      return () => window.cancelIdleCallback?.(id)
+    }
+    const id = setTimeout(start, 700)
+    return () => clearTimeout(id)
+  }, [])
+
+  // Kick off playback once the source has been attached
+  useEffect(() => {
+    if (heroSrc && heroVideoRef.current) {
+      heroVideoRef.current.load()
+      heroVideoRef.current.play().catch(() => {})
+    }
+  }, [heroSrc])
 
   useEffect(() => {
     const captions = gsap.utils.toArray(".image-caption__text")
@@ -347,8 +366,8 @@ export default function Home() {
 
       <div className="hero-scene">
         <div className="hero-sticky">
-          <video className="hero-video" autoPlay muted loop playsInline poster={heroPoster}>
-            <source src={heroSrc} type="video/webm" />
+          <video ref={heroVideoRef} className="hero-video" autoPlay muted loop playsInline poster={heroPoster}>
+            {heroSrc && <source src={heroSrc} type="video/webm" />}
           </video>
           <p className="hero-tagline" ref={taglineRef}>{t("home.tagline")}</p>
         </div>

@@ -28,7 +28,7 @@ export const TRANSLATIONS = {
   "home.arrowNextMalas": { pt: "Ver mais malas", en: "More bags" },
   "home.arrowPrevColecoes": { pt: "Ver coleções anteriores", en: "Previous collections" },
   "home.arrowNextColecoes": { pt: "Ver coleções seguintes", en: "Next collections" },
-  "home.meta.title": { pt: "Conceição", en: "Conceição" },
+  "home.meta.title": { pt: "Conceição Fernandes — Artesã", en: "Conceição Fernandes — Artisan" },
   "home.meta.desc": {
     pt: "Prática artística visual de Conceição.",
     en: "Visual artistic practice of Conceição.",

@@ -47,6 +47,16 @@ for (const file of files) {
   made++
 }
 
+// Remove thumbs whose source photo no longer exists (e.g. after a rename)
+const sources = new Set(files)
+let removed = 0
+for (const thumb of await fs.readdir(OUT)) {
+  if (thumb.endsWith(".webp") && !sources.has(thumb)) {
+    await fs.unlink(path.join(OUT, thumb))
+    removed++
+  }
+}
+
 const mb = n => (n / 1048576).toFixed(1)
-console.log(`thumbs: ${made} geradas, ${skipped} já actualizadas`)
+console.log(`thumbs: ${made} geradas, ${skipped} já actualizadas, ${removed} órfãs removidas`)
 console.log(`originais ${mb(bytesIn)} MB -> thumbs ${mb(bytesOut)} MB`)
