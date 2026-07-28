@@ -37,6 +37,8 @@ body::before {
 html, body {
   scrollbar-width: none;
   -webkit-tap-highlight-color: transparent;
+  /* beige on html too, so any strip the mobile browser reveals isn't white */
+  background: #f3eee6;
 }
 
 html::-webkit-scrollbar,
@@ -777,9 +779,9 @@ h1 {
     grid-column: 1 / -1;
   }
 
-  /* Ornament pair: side by side, each half the grid */
+  /* Ornament pair: stacked, each full viewport width */
   .page-grid--home > .image-block--wide {
-    grid-column: span 6;
+    grid-column: 1 / -1;
   }
 
   /* Malas gallery: one photo per view on mobile */
