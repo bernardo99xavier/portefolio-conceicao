@@ -214,6 +214,28 @@ h1 {
   display: block;
 }
 
+/* Mobile hero gallery: full-screen cross-fading images replacing the video.
+   Hidden on desktop; lazy + display:none there means the images aren't fetched. */
+.hero-gallery {
+  position: absolute;
+  inset: 0;
+  display: none;
+}
+
+.hero-gallery img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.hero-gallery img.active {
+  opacity: 1;
+}
+
 .hero-tagline {
   position: relative;
   z-index: 1;
@@ -701,11 +723,25 @@ h1 {
     border-bottom: 0;
   }
 
+  /* Hero: image gallery instead of the video */
+  .hero-video {
+    display: none;
+  }
+
+  .hero-gallery {
+    display: block;
+  }
+
   /* The clamp() values in the base rules exist for the tablet range; on phones
      they would bottom out at their minimum, so pin these back to the sizes the
      mobile layout was designed with. */
-  nav,
-  .nav-filter-btn {
+  nav {
+    font-size: 14px;
+  }
+
+  /* Match the nav links (14px). More specific than the base .nav-filter-btn
+     clamp rule, which comes later in the source and would otherwise win. */
+  .mobile-filter-bar .nav-filter-btn {
     font-size: 14px;
   }
 
