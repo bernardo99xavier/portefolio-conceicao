@@ -9,7 +9,6 @@ import { useLang } from "../context/LangContext"
 import { catalogue } from "../data/catalogue"
 
 import heroVideo from "../assets/videos/hp_v002.webm"
-import heroVideoMobile from "../assets/videos/hp_v002.mobile.webm"
 import malasVideo from "../assets/videos/hp_v003.webm"
 import malasVideo2 from "../assets/videos/hp_v004.webm"
 
@@ -18,6 +17,21 @@ import malasVideo2 from "../assets/videos/hp_v004.webm"
 import heroPoster from "../assets/img/posters/hero.webp"
 import story1Poster from "../assets/img/posters/story1.webp"
 import story2Poster from "../assets/img/posters/story2.webp"
+import story4Poster from "../assets/img/posters/story4.webp"
+import story5Poster from "../assets/img/posters/story5.webp"
+import story6Poster from "../assets/img/posters/story6.webp"
+import story7Poster from "../assets/img/posters/story7.webp"
+// Mobile hero: a full-screen autoplay gallery in place of the video.
+// `position` is object-position (images use object-fit: cover): the first value
+// is horizontal (0% left … 100% right), the second vertical (0% top … 100% bottom).
+const heroGalleryImages = [
+  { src: story1Poster, position: "50% center" },
+  { src: story2Poster, position: "80% center" },
+  { src: story4Poster, position: "50% center" },
+  { src: story5Poster, position: "50% center" },
+  { src: story6Poster, position: "50% center" },
+  { src: story7Poster, position: "50% center" },
+]
 
 import imgNervuras from "../assets/img/collections/nervuras_thumbnail.webp"
 import imgFolhas from "../assets/img/collections/folhas_thumbnail.webp"
@@ -68,14 +82,26 @@ export default function Home() {
   const [heroSrc, setHeroSrc] = useState(null)
 
   useEffect(() => {
-    const src = window.innerWidth < 768 ? heroVideoMobile : heroVideo
-    const start = () => setHeroSrc(src)
+    // Mobile uses the image gallery instead of the video
+    if (window.innerWidth < 768) return
+    const start = () => setHeroSrc(heroVideo)
     if (window.requestIdleCallback) {
       const id = window.requestIdleCallback(start, { timeout: 2500 })
       return () => window.cancelIdleCallback?.(id)
     }
     const id = setTimeout(start, 700)
     return () => clearTimeout(id)
+  }, [])
+
+  // Mobile hero gallery: cross-fade through the story images on a timer
+  const [heroGalleryIndex, setHeroGalleryIndex] = useState(0)
+
+  useEffect(() => {
+    if (window.innerWidth >= 768) return
+    const id = setInterval(() => {
+      setHeroGalleryIndex(i => (i + 1) % heroGalleryImages.length)
+    }, 3500)
+    return () => clearInterval(id)
   }, [])
 
   // Kick off playback once the source has been attached
@@ -369,6 +395,21 @@ export default function Home() {
           <video ref={heroVideoRef} className="hero-video" autoPlay muted loop playsInline poster={heroPoster}>
             {heroSrc && <source src={heroSrc} type="video/webm" />}
           </video>
+
+          {/* Mobile-only: hidden (and never fetched) on desktop via CSS + lazy */}
+          <div className="hero-gallery" aria-hidden="true">
+            {heroGalleryImages.map(({ src, position }, i) => (
+              <img
+                key={i}
+                src={src}
+                alt=""
+                loading="lazy"
+                className={i === heroGalleryIndex ? "active" : ""}
+                style={position ? { objectPosition: position } : undefined}
+              />
+            ))}
+          </div>
+
           <p className="hero-tagline" ref={taglineRef}>{t("home.tagline")}</p>
         </div>
       </div>
