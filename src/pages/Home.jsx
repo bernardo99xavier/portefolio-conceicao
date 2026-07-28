@@ -17,21 +17,24 @@ import malasVideo2 from "../assets/videos/hp_v004.webm"
 import heroPoster from "../assets/img/posters/hero.webp"
 import story1Poster from "../assets/img/posters/story1.webp"
 import story2Poster from "../assets/img/posters/story2.webp"
-import story4Poster from "../assets/img/posters/story4.webp"
-import story5Poster from "../assets/img/posters/story5.webp"
-import story6Poster from "../assets/img/posters/story6.webp"
-import story7Poster from "../assets/img/posters/story7.webp"
-// Mobile hero: a full-screen autoplay gallery in place of the video.
-// `position` is object-position (images use object-fit: cover): the first value
-// is horizontal (0% left … 100% right), the second vertical (0% top … 100% bottom).
-const heroGalleryImages = [
-  { src: story1Poster, position: "50% center" },
-  { src: story2Poster, position: "80% center" },
-  { src: story4Poster, position: "50% center" },
-  { src: story5Poster, position: "50% center" },
-  { src: story6Poster, position: "50% center" },
-  { src: story7Poster, position: "50% center" },
-]
+
+// Mobile hero gallery: every story*.webp in the posters folder, so adding or
+// removing an image never breaks the build. Ordered by number. Optional
+// per-image object-position override keyed by filename — horizontal 0% left …
+// 100% right, vertical 0% top … 100% bottom; default is centered.
+const storyPosters = import.meta.glob("../assets/img/posters/story*.webp", {
+  eager: true,
+  import: "default",
+})
+const heroGalleryPositions = {
+  "story1.webp": "40% center",
+}
+const heroGalleryImages = Object.entries(storyPosters)
+  .sort(([a], [b]) => Number(a.match(/story(\d+)/)[1]) - Number(b.match(/story(\d+)/)[1]))
+  .map(([path, src]) => ({
+    src,
+    position: heroGalleryPositions[path.split("/").pop()] || "50% center",
+  }))
 
 import imgNervuras from "../assets/img/collections/nervuras_thumbnail.webp"
 import imgFolhas from "../assets/img/collections/folhas_thumbnail.webp"
